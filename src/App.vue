@@ -1,5 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import DraftGrid from "./components/DraftGrid.vue";
+import TeamGrid from "./components/TeamGrid.vue";
 const allPlayers = ref([]);
 const cols = ref([]);
 
@@ -16,7 +18,6 @@ onMounted(() => {
   // load in data.csv from assets
   const savedData = localStorage.getItem("allPlayers");
   if (savedData) {
-    console.log("using local storage");
     allPlayers.value = JSON.parse(savedData);
     cols.value = Object.keys(allPlayers.value[0]);
   } else {
@@ -43,41 +44,82 @@ onMounted(() => {
 });
 
 const search = ref("");
+const view = ref("team");
 </script>
 
 <template>
-  <h1>Draft Helper</h1>
-  <input v-model="search" />
-  <div class="draft-grid">
-    <!-- Header -->
-    <template v-for="col in cols" :key="col">
-      <div class="draft-header-cell">{{ col }}</div>
-    </template>
-    <!--  End Header -->
-    <template v-for="player in displayPlayers" :key="player.name">
-      <template v-for="col in cols" :key="col">
-        <div class="draft-cell">{{ player[col] }}</div>
-      </template>
-    </template>
+  <div class="app-heading">
+    <h1>Draft Helper</h1>
+    <div class="form">
+      <input v-model="search" />
+      <div class="form-actions">
+        <button class="success">Draft</button>
+      </div>
+    </div>
+  </div>
+  <div class="tab-panel">
+    <div class="tab-bar">
+      <button
+        :class="{
+          tab: true,
+          active: view === 'draft',
+        }"
+        @click="view = 'draft'"
+      >
+        Draft board
+      </button>
+      <button
+        :class="{
+          tab: true,
+          active: view === 'team',
+        }"
+        @click="view = 'team'"
+      >
+        Team board
+      </button>
+    </div>
+    <DraftGrid :players="displayPlayers" :cols="cols" v-if="view === 'draft'" />
+    <TeamGrid v-else-if="view === 'team'" />
   </div>
 </template>
 
 <style scoped>
-.draft-grid {
-  display: grid;
-  grid-template-columns: repeat(23, 1fr);
-  grid-template-rows: repeat(16, 1fr);
-  width: 100%;
+button.success {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: bold;
+}
+button.success:hover,
+button.success:active {
+  background-color: #3e8e41;
+  transform: scale(1.05);
 }
 
-.draft-header-cell {
+.tab-bar {
   background-color: #f1f1f1;
-  border: 1px solid #ddd;
-  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
 }
 
-.draft-cell {
+.tab {
+  padding: 0.5rem 1rem;
   border: 1px solid #ddd;
-  text-align: center;
+  border-bottom: none;
+  cursor: pointer;
+}
+
+.tab.active {
+  background-color: white;
+  border-bottom: 5px solid #4caf50;
 }
 </style>
