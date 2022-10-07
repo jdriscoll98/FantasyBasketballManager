@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from "vue";
+import DraftButton from "./Button.vue";
 const props = defineProps({
   players: {
     type: Array,
@@ -11,16 +12,28 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["draftPlayer"]);
+
 function handleCheckboxChanged(e, player) {
   player.selected = e.target.checked;
 }
+
+function onDraftButtonClicked(player) {
+  emit("draftPlayer", player);
+}
+
+const excludedCols = ["drafted"];
+
+const filterdCols = computed(() => {
+  return props.cols.filter((col) => !excludedCols.includes(col));
+});
 </script>
 
 <template>
   <div class="draft-grid">
     <!-- Header -->
     <div class="draft-header-cell"></div>
-    <template v-for="col in cols" :key="col">
+    <template v-for="col in filterdCols" :key="col">
       <div class="draft-header-cell">{{ col }}</div>
     </template>
     <!--  End Header -->
@@ -32,12 +45,13 @@ function handleCheckboxChanged(e, player) {
           'draft-cell--selected': player.selected,
         }"
       >
-        <input
-          type="checkbox"
-          @change="handleCheckboxChanged($event, player)"
+        <DraftButton
+          @click="onDraftButtonClicked(player)"
+          label="Draft"
+          type="success"
         />
       </div>
-      <template v-for="col in cols" :key="col">
+      <template v-for="col in filterdCols" :key="col">
         <div
           :class="{
             'draft-cell': true,
@@ -56,14 +70,18 @@ function handleCheckboxChanged(e, player) {
 .draft-grid {
   display: grid;
   grid-template-columns: repeat(24, 1fr);
-  grid-template-rows: repeat(16, 1fr);
+  grid-template-rows: repeat(20, min-content);
   width: 100%;
+  height: calc(100vh - 11rem);
+  overflow-y: scroll;
 }
 
 .draft-header-cell {
   background-color: #f1f1f1;
   border: 1px solid #ddd;
   text-align: center;
+  position: sticky;
+  top: 0;
 }
 
 .draft-cell {

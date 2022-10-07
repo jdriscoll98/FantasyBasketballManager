@@ -21,14 +21,21 @@ body {
   display: flex;
   min-width: 320px;
   height: 100%;
+  overflow: hidden;
 }
 
 
 #app {
-  text-align: center;
+  height: 100%;
   width:100%;
+  display: grid;
+  grid-template-rows: 5rem auto;
 }
 
+* {
+  margin: 0;
+  padding: 0;
+}
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
