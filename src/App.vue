@@ -18,12 +18,16 @@ const allPlayers = ref([]);
 const cols = ref([]);
 
 const displayPlayers = computed(() => {
-  return availablePlayers.value.filter((player) => {
-    return (
-      search.value === "" ||
-      player.PLAYER.toLowerCase().includes(search.value.toLowerCase())
-    );
-  });
+  return availablePlayers.value
+    .filter((player) => {
+      return (
+        search.value === "" ||
+        player.PLAYER.toLowerCase().includes(search.value.toLowerCase())
+      );
+    })
+    .sort((a, b) => {
+      return Number(b.TOTAL) - Number(a.TOTAL);
+    });
 });
 
 onMounted(() => {
@@ -65,6 +69,7 @@ const view = ref("draft");
 
 const autoIncrementOnDraft = ref(true);
 const autoIncrementReverse = ref(false);
+const autoDraft = ref(true);
 const onSearchChange = (value) => {
   search.value = value;
 };
@@ -73,14 +78,21 @@ const onDrafted = (player) => {
   const team = teams.value[activeTeamIndex.value];
   const emptyPlayer = team.players.find((p) => p.empty);
   if (emptyPlayer) {
-    emptyPlayer.empty = false;
-    Object.assign(emptyPlayer, player);
-    player.drafted = true;
-    setTeams([...teams.value]);
-    allPlayers.value = [...allPlayers.value];
-    localStorage.setItem("allPlayers", JSON.stringify(allPlayers.value));
-    updateActiveTeam();
+    draftPlayer(emptyPlayer, player);
+    if (!autoDraft.value) {
+      updateActiveTeam();
+    } else {
+      draftOtherTeams();
+    }
   }
+};
+
+const draftPlayer = (emptyPlayer, player) => {
+  emptyPlayer.empty = false;
+  Object.assign(emptyPlayer, player);
+  setTeams([...teams.value]);
+  allPlayers.value = [...allPlayers.value];
+  localStorage.setItem("allPlayers", JSON.stringify(allPlayers.value));
 };
 
 const onPlayerDeleted = (team, player, index) => {
@@ -115,8 +127,41 @@ function updateActiveTeam() {
   }
 }
 
+function draftOtherTeams() {
+  const currentTeamIndex = activeTeamIndex.value;
+  updateActiveTeam();
+  while (activeTeamIndex.value !== currentTeamIndex) {
+    const team = teams.value[activeTeamIndex.value];
+    const emptyPlayer = team.players.find((p) => p.empty);
+    if (emptyPlayer) {
+      draftPlayer(emptyPlayer, getNextPlayer());
+      updateActiveTeam();
+    } else {
+      break;
+    }
+  }
+}
+
+const sortedPlayersByAdp = computed(() => {
+  return [...availablePlayers.value].sort((a, b) => {
+    const player1 = a.ADP === "" ? 1000 : Number(a.ADP);
+    const player2 = b.ADP === "" ? 1000 : Number(b.ADP);
+    return player1 - player2;
+  });
+});
+
+function getNextPlayer() {
+  // random number between 0 and 3
+  const random = Math.floor(Math.random() * 4);
+  return sortedPlayersByAdp.value[random];
+}
+
 function onAutoIncrementChange(event) {
   autoIncrementOnDraft.value = event.target.checked;
+}
+
+function onAutoDraftChange(event) {
+  autoDraft.value = event.target.checked;
 }
 
 const availablePlayers = computed(() => {
@@ -181,11 +226,13 @@ const resetTeams = () => {
         @search="onSearchChange"
         @selectTeam="onSelectTeam"
         @changeAutoIncrement="onAutoIncrementChange"
+        :autoIncrementOnDraft="autoIncrementOnDraft"
+        @changeAutoDraft="onAutoDraftChange"
+        :autoDraft="autoDraft"
         @draft="
           onDrafted(displayPlayers[0]);
           search = '';
         "
-        :autoIncrementOnDraft="autoIncrementOnDraft"
         :activeTeamIndex="activeTeamIndex"
         :teams="teams"
       />

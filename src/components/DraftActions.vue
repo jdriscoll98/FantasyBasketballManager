@@ -4,6 +4,7 @@ const emit = defineEmits([
   "search",
   "selectTeam",
   "changeAutoIncrement",
+  "changeAutoDraft",
   "draft",
 ]);
 const props = defineProps({
@@ -15,6 +16,9 @@ const props = defineProps({
     type: Number,
   },
   autoIncrementOnDraft: {
+    type: Boolean,
+  },
+  autoDraft: {
     type: Boolean,
   },
 });
@@ -38,6 +42,13 @@ const search = ref("");
           type="checkbox"
           :checked="props.autoIncrementOnDraft"
         /><label>Auto increment on draft</label>
+      </div>
+      <div class="checkbox-container">
+        <input
+          @change="emit('changeAutoDraft', $event)"
+          type="checkbox"
+          :checked="props.autoDraft"
+        /><label>Auto draft other teams</label>
       </div>
     </div>
     <input
