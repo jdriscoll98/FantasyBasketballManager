@@ -22,7 +22,7 @@ function onDraftButtonClicked(player) {
   emit("draftPlayer", player);
 }
 
-const excludedCols = ["drafted"];
+const excludedCols = [];
 
 const filterdCols = computed(() => {
   return props.cols.filter((col) => !excludedCols.includes(col));
@@ -72,8 +72,15 @@ const filterdCols = computed(() => {
   grid-template-columns: repeat(24, 1fr);
   grid-template-rows: repeat(20, min-content);
   width: 100%;
-  height: calc(100vh - 11rem);
-  overflow-y: scroll;
+  height: calc(100vh - 8rem);
+  overflow: scroll;
+  max-width: 100vw;
+}
+
+@media (min-width: 600px) {
+  .draft-grid {
+    height: calc(100vh - 11rem);
+  }
 }
 
 .draft-header-cell {

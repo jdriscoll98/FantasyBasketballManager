@@ -26,8 +26,16 @@ body {
   height: 100%;
   width:100%;
   display: grid;
-  grid-template-rows: 5rem auto;
+  grid-template-rows: 2rem 3rem auto;
+  overflow: hidden;
 }
+
+@media screen and (min-width: 600px) {
+  #app {
+    grid-template-rows: 5rem 3rem auto;
+  }
+}
+  
 
 * {
   margin: 0;

@@ -49,45 +49,43 @@ onMounted(() => {
   <div class="app-heading">
     <h1>Fantasy Basketball Manager</h1>
   </div>
-  <div class="tab-panel">
-    <div class="tab-bar">
-      <Tab
-        label="Draft board"
-        tab="draft"
-        :active="view === 'draft'"
-        @click="view = 'draft'"
-      />
-      <Tab
-        label="Team board"
-        tab="team"
-        :active="view === 'team'"
-        @click="view = 'team'"
-      />
-    </div>
-    <div class="tab-actions">
-      <DraftActions
-        v-if="view === 'draft'"
-        @search="search = $event"
-        @changeSetting="changeSetting($event.key, $event.value)"
-        :settings="draftSettings"
-        :teams="teams"
-      />
-      <TeamActions v-if="view === 'team'" @reset="resetTeams" />
-    </div>
-    <div class="tab-content">
-      <DraftGrid
-        :players="displayPlayers"
-        :cols="cols"
-        v-if="view === 'draft'"
-        @draftPlayer="onDrafted"
-      />
-      <TeamGrid
-        :teams="teams"
-        v-else-if="view === 'team'"
-        value.
-        @deletePlayer="deletePlayer"
-      />
-    </div>
+  <div class="tab-bar">
+    <Tab
+      label="Draft board"
+      tab="draft"
+      :active="view === 'draft'"
+      @click="view = 'draft'"
+    />
+    <Tab
+      label="Team board"
+      tab="team"
+      :active="view === 'team'"
+      @click="view = 'team'"
+    />
+  </div>
+  <div class="tab-actions">
+    <DraftActions
+      v-if="view === 'draft'"
+      @search="search = $event"
+      @changeSetting="changeSetting($event.key, $event.value)"
+      :settings="draftSettings"
+      :teams="teams"
+    />
+    <TeamActions v-if="view === 'team'" @reset="resetTeams" />
+  </div>
+  <div class="tab-content">
+    <DraftGrid
+      :players="displayPlayers"
+      :cols="cols"
+      v-if="view === 'draft'"
+      @draftPlayer="onDrafted"
+    />
+    <TeamGrid
+      :teams="teams"
+      v-else-if="view === 'team'"
+      value.
+      @deletePlayer="deletePlayer"
+    />
   </div>
 </template>
 
@@ -97,15 +95,8 @@ onMounted(() => {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  position: sticky;
-  top: 5rem;
-  height: 3rem;
 }
 
-.tab-actions {
-  position: sticky;
-  top: 8rem;
-}
 
 .tab-panel {
   display: grid;
@@ -118,7 +109,14 @@ onMounted(() => {
   align-items: center;
   background-color: rgb(0, 27, 85);
   color: white;
-  position: sticky;
-  top: 0;
+  max-width: 100vw;
+ 
+    
 }
+
+@media screen and (max-width: 600px) {
+   .app-heading {
+    font-size: .5rem;
+   } 
+  }
 </style>
