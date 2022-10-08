@@ -1,25 +1,14 @@
 <script setup>
 import { ref } from "vue";
-const emit = defineEmits([
-  "search",
-  "selectTeam",
-  "changeAutoIncrement",
-  "changeAutoDraft",
-  "draft",
-]);
+const emit = defineEmits(["search", "selectTeam", "changeSetting", "draft"]);
 const props = defineProps({
   teams: {
     type: Array,
     required: true,
   },
-  activeTeamIndex: {
-    type: Number,
-  },
-  autoIncrementOnDraft: {
-    type: Boolean,
-  },
-  autoDraft: {
-    type: Boolean,
+  settings: {
+    type: Object,
+    required: true,
   },
 });
 const search = ref("");
@@ -29,25 +18,46 @@ const search = ref("");
   <div class="draft-actions">
     <div class="team-select-container">
       <label>Active team: </label>
-      <select @change="emit('selectTeam', $event)" class="draft-select">
+      <select
+        @change="
+          emit('changeSetting', {
+            key: 'activeTeamIndex',
+            value: Number($event.target.value),
+          })
+        "
+        class="draft-select"
+      >
         <template v-for="(team, index) in props.teams" :key="team.name">
-          <option :value="index" :selected="index === props.activeTeamIndex">
+          <option
+            :value="index"
+            :selected="index === props.settings.activeTeamIndex"
+          >
             {{ team.name }}
           </option>
         </template>
       </select>
       <div class="checkbox-container">
         <input
-          @change="emit('changeAutoIncrement', $event)"
+          @change="
+            emit('changeSetting', {
+              key: 'autoIncrementOnDraft',
+              value: $event.target.checked,
+            })
+          "
           type="checkbox"
-          :checked="props.autoIncrementOnDraft"
+          :checked="props.settings.autoIncrementOnDraft"
         /><label>Auto increment on draft</label>
       </div>
       <div class="checkbox-container">
         <input
-          @change="emit('changeAutoDraft', $event)"
+          @change="
+            emit('changeSetting', {
+              key: 'autoDraft',
+              value: $event.target.checked,
+            })
+          "
           type="checkbox"
-          :checked="props.autoDraft"
+          :checked="props.settings.autoDraft"
         /><label>Auto draft other teams</label>
       </div>
     </div>
@@ -56,10 +66,6 @@ const search = ref("");
       v-model="search"
       placeholder="Search by name. . ."
       @input="emit('search', search)"
-      @keyup.enter="
-        emit('draft');
-        search = '';
-      "
     />
   </div>
 </template>

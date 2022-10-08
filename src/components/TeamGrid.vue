@@ -26,7 +26,10 @@ const getTeamEv = (team) => {
         <template v-for="(player, index) in team.players" :key="player.PLAYER">
           <div class="team-cell">
             {{ player.PLAYER }}
-            <button @click="emit('deletePlayer', team, player, index)">
+            <button
+              v-if="!player.empty"
+              @click="emit('deletePlayer', team, index)"
+            >
               Delete
             </button>
           </div>

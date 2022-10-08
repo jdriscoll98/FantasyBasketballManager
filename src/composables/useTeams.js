@@ -2,7 +2,6 @@ import { ref } from "vue";
 
 export const useTeams = () => {
   const teams = ref([]);
-  const activeTeamIndex = ref(0);
 
   function fetchTeamData() {
     const savedTeams = localStorage.getItem("allTeams");
@@ -35,15 +34,33 @@ export const useTeams = () => {
     localStorage.setItem("allTeams", JSON.stringify(teams.value));
   }
 
-  function saveTeamsToLocalStorage(teamId) {
-    localStorage.setItem(`teams-${teamId}`, JSON.stringify(teams.value));
-  }
+  const resetTeams = () => {
+    teams.value = teams.value.map((team) => {
+      team.players = team.players.map((_, index) => {
+        return {
+          PLAYER: `Player ${index + 1}`,
+          empty: true,
+        };
+      });
+      return team;
+    });
+    localStorage.setItem("allTeams", JSON.stringify(teams.value));
+  };
+
+  const deletePlayer = (team, index) => {
+    const emptyPlayer = {
+      empty: true,
+      PLAYER: "Player" + (index + 1),
+    };
+    team.players[index] = emptyPlayer;
+    setTeams([...teams.value]);
+  };
 
   return {
     teams,
-    activeTeamIndex,
     fetchTeamData,
     setTeams,
-    saveTeamsToLocalStorage,
+    resetTeams,
+    deletePlayer,
   };
 };
