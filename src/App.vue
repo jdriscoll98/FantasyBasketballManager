@@ -4,6 +4,15 @@ import DraftGrid from "./components/DraftGrid.vue";
 import DraftActions from "./components/DraftActions.vue";
 import TeamGrid from "./components/TeamGrid.vue";
 import TeamActions from "./components/TeamActions.vue";
+import { useTeams } from "./composables/useTeams.js";
+
+const {
+  teams,
+  activeTeamIndex,
+  fetchTeamData,
+  setTeams,
+  saveTeamsToLocalStorage,
+} = useTeams();
 
 const allPlayers = ref([]);
 const cols = ref([]);
@@ -51,37 +60,11 @@ function fetchPlayerData() {
   }
 }
 
-function fetchTeamData() {
-  const savedTeams = localStorage.getItem("allTeams");
-  if (savedTeams) {
-    teams.value = JSON.parse(savedTeams);
-  } else {
-    // generate empty teams
-    teams.value = Array(10)
-      .fill(0)
-      .map((_, i) => {
-        const players = Array(13)
-          .fill(0)
-          .map((_, i) => {
-            return {
-              PLAYER: `Player ${i + 1}`,
-              empty: true,
-            };
-          });
-        return {
-          name: `Team ${i + 1}`,
-          players,
-        };
-      });
-    localStorage.setItem("allTeams", JSON.stringify(teams.value));
-  }
-}
 const search = ref("");
 const view = ref("draft");
 
-const teams = ref([]);
-const activeTeamIndex = ref(0);
 const autoIncrementOnDraft = ref(true);
+const autoIncrementReverse = ref(false);
 const onSearchChange = (value) => {
   search.value = value;
 };
@@ -93,23 +76,63 @@ const onDrafted = (player) => {
     emptyPlayer.empty = false;
     Object.assign(emptyPlayer, player);
     player.drafted = true;
+    setTeams([...teams.value]);
     allPlayers.value = [...allPlayers.value];
-    teams.value = [...teams.value];
     localStorage.setItem("allPlayers", JSON.stringify(allPlayers.value));
-    localStorage.setItem("allTeams", JSON.stringify(teams.value));
-    if (autoIncrementOnDraft.value) {
-      activeTeamIndex.value = (activeTeamIndex.value + 1) % teams.value.length;
-    }
+    updateActiveTeam();
   }
 };
+
+const onPlayerDeleted = (team, player, index) => {
+  const currentPlayer = allPlayers.value.find(
+    (p) => p.PLAYER === player.PLAYER
+  );
+  const emptyPlayer = {
+    empty: true,
+    PLAYER: "Player" + (index + 1),
+  };
+  team.players[index] = emptyPlayer;
+  setTeams([...teams.value]);
+};
+
+function updateActiveTeam() {
+  if (!autoIncrementOnDraft.value) return;
+  if (
+    activeTeamIndex.value === teams.value.length - 1 &&
+    !autoIncrementReverse.value
+  ) {
+    autoIncrementReverse.value = true;
+    return;
+  }
+  if (activeTeamIndex.value === 0 && autoIncrementReverse.value) {
+    autoIncrementReverse.value = false;
+    return;
+  }
+  if (autoIncrementReverse.value) {
+    activeTeamIndex.value = activeTeamIndex.value - 1;
+  } else {
+    activeTeamIndex.value = activeTeamIndex.value + 1;
+  }
+}
 
 function onAutoIncrementChange(event) {
   autoIncrementOnDraft.value = event.target.checked;
 }
 
 const availablePlayers = computed(() => {
-  return allPlayers.value.filter((player) => !player.drafted);
+  return allPlayers.value.filter((player) => {
+    let drafted = false;
+    teams.value.forEach((team) => {
+      return team.players.forEach((p) => {
+        if (p.PLAYER === player.PLAYER) {
+          drafted = true;
+        }
+      });
+    });
+    return !drafted;
+  });
 });
+
 const onSelectTeam = (e) => {
   activeTeamIndex.value = Number(e.target.value);
 };
@@ -123,11 +146,6 @@ const resetTeams = () => {
     });
     return team;
   });
-  allPlayers.value = allPlayers.value.map((player) => {
-    player.drafted = false;
-    return player;
-  });
-  localStorage.setItem("allPlayers", JSON.stringify(allPlayers.value));
   localStorage.setItem("allTeams", JSON.stringify(teams.value));
 };
 </script>
@@ -163,6 +181,10 @@ const resetTeams = () => {
         @search="onSearchChange"
         @selectTeam="onSelectTeam"
         @changeAutoIncrement="onAutoIncrementChange"
+        @draft="
+          onDrafted(displayPlayers[0]);
+          search = '';
+        "
         :autoIncrementOnDraft="autoIncrementOnDraft"
         :activeTeamIndex="activeTeamIndex"
         :teams="teams"
@@ -175,7 +197,12 @@ const resetTeams = () => {
       v-if="view === 'draft'"
       @draftPlayer="onDrafted"
     />
-    <TeamGrid :teams="teams" v-else-if="view === 'team'" />
+    <TeamGrid
+      :teams="teams"
+      v-else-if="view === 'team'"
+      value.
+      @deletePlayer="onPlayerDeleted"
+    />
   </div>
 </template>
 

@@ -1,6 +1,11 @@
 <script setup>
 import { ref } from "vue";
-const emit = defineEmits(["search", "selectTeam", "changeAutoIncrement"]);
+const emit = defineEmits([
+  "search",
+  "selectTeam",
+  "changeAutoIncrement",
+  "draft",
+]);
 const props = defineProps({
   teams: {
     type: Array,
@@ -40,6 +45,10 @@ const search = ref("");
       v-model="search"
       placeholder="Search by name. . ."
       @input="emit('search', search)"
+      @keyup.enter="
+        emit('draft');
+        search = '';
+      "
     />
   </div>
 </template>

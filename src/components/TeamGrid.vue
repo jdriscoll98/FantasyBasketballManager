@@ -6,6 +6,8 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["deletePlayer"]);
+
 const getTeamEv = (team) => {
   // sum up each players total value
   return Math.round(
@@ -21,9 +23,12 @@ const getTeamEv = (team) => {
     <template v-for="team in props.teams" :key="team.name">
       <div class="team">
         <div class="team-header-cell">{{ team.name }}</div>
-        <template v-for="player in team.players" :key="player.PLAYER">
+        <template v-for="(player, index) in team.players" :key="player.PLAYER">
           <div class="team-cell">
             {{ player.PLAYER }}
+            <button @click="emit('deletePlayer', team, player, index)">
+              Delete
+            </button>
           </div>
         </template>
         <div class="team-footer-cell">
@@ -60,6 +65,15 @@ const getTeamEv = (team) => {
   border: 1px solid #ddd;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+
+.team-cell button {
+  border: none;
+  cursor: pointer;
+  margin: 0 0.5rem;
+  text-decoration: underline;
+  color: red;
 }
 
 .team {
