@@ -1,4 +1,18 @@
-export const useDraft = (teams, setTeams) => {
+export const useDraft = (
+  teams,
+  setTeams,
+  draftSettings,
+  updateActiveTeam,
+  sortedPlayersByAdp
+) => {
+  const onDrafted = (player) => {
+    draftPlayer(player);
+    if (!draftSettings.autoDraft) {
+      updateActiveTeam();
+    } else {
+      draftOtherTeams();
+    }
+  };
   const draftPlayer = (player) => {
     const team = teams.value[draftSettings.activeTeamIndex];
     const emptyPlayer = team.players.find((p) => p.empty);
@@ -6,11 +20,6 @@ export const useDraft = (teams, setTeams) => {
       emptyPlayer.empty = false;
       Object.assign(emptyPlayer, player);
       setTeams([...teams.value]);
-      if (!draftSettings.autoDraft) {
-        updateActiveTeam();
-      } else {
-        draftOtherTeams();
-      }
     }
   };
 
@@ -18,24 +27,18 @@ export const useDraft = (teams, setTeams) => {
     const currentTeamIndex = draftSettings.activeTeamIndex;
     updateActiveTeam();
     while (draftSettings.activeTeamIndex !== currentTeamIndex) {
-      const team = teams.value[draftSettings.activeTeamIndex];
-      const emptyPlayer = team.players.find((p) => p.empty);
-      if (emptyPlayer) {
-        draftPlayer(emptyPlayer, getNextPlayer());
-        updateActiveTeam();
-      } else {
-        break;
-      }
+      draftPlayer(getNextPlayer());
+      updateActiveTeam();
     }
   }
 
   function getNextPlayer() {
     // random number between 0 and 3
-    const random = Math.floor(Math.random() * 4);
+    const random = Math.floor(Math.random() * 3);
     return sortedPlayersByAdp.value[random];
   }
 
   return {
-    draftPlayer,
+    onDrafted,
   };
 };

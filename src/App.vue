@@ -27,7 +27,13 @@ const { draftSettings, changeSetting, updateActiveTeam, search } =
 const { allPlayers, fetchPlayerData, displayPlayers, sortedPlayersByAdp } =
   usePlayers(teams, search);
 
-const { draftPlayer } = useDraft(teams, setTeams);
+const { onDrafted } = useDraft(
+  teams,
+  setTeams,
+  draftSettings,
+  updateActiveTeam,
+  sortedPlayersByAdp
+);
 
 const cols = computed(() => {
   return allPlayers.value.length > 0 ? Object.keys(allPlayers.value[0]) : [];
@@ -73,7 +79,7 @@ onMounted(() => {
         :players="displayPlayers"
         :cols="cols"
         v-if="view === 'draft'"
-        @draftPlayer="draftPlayer"
+        @draftPlayer="onDrafted"
       />
       <TeamGrid
         :teams="teams"
