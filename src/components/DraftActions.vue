@@ -12,70 +12,63 @@ const props = defineProps({
   },
 });
 const search = ref("");
+
+const toggleMenu = () => {
+  const menu = document.querySelector(".team-select-container");
+  menu.classList.toggle("show");
+}
 </script>
 
- <template >
+<template>
   <div class="draft-actions">
+
+    <div class="toolbar">
+      <Button icon="pi pi-cog" class="p-button-rounded p-button-text" @click="toggleMenu()" />
+      <input class="filter-table-searchbar" v-model="search" placeholder="Search by name. . ."
+        @input="emit('search', search)" />
+    </div>
     <div class="team-select-container">
-      <label>Active team: </label>
-      <select
-        @change="
-          emit('changeSetting', {
-            key: 'activeTeamIndex',
-            value: Number($event.target.value),
-          })
-        "
-        class="draft-select"
-      >
+      <label class="team-select-label">Active team: </label>
+      <select @change="
+        emit('changeSetting', {
+          key: 'activeTeamIndex',
+          value: Number($event.target.value),
+        })
+      " class="draft-select">
         <template v-for="(team, index) in props.teams" :key="team.name">
-          <option
-            :value="index"
-            :selected="index === props.settings.activeTeamIndex"
-          >
+          <option :value="index" :selected="index === props.settings.activeTeamIndex">
             {{ team.name }}
           </option>
         </template>
       </select>
       <div class="checkbox-container">
-        <input
-          @change="
-            emit('changeSetting', {
-              key: 'autoIncrementOnDraft',
-              value: $event.target.checked,
-            })
-          "
-          type="checkbox"
-          :checked="props.settings.autoIncrementOnDraft"
-        /><label>Auto increment on draft</label>
+        <input @change="
+          emit('changeSetting', {
+            key: 'autoIncrementOnDraft',
+            value: $event.target.checked,
+          })
+        " type="checkbox" :checked="props.settings.autoIncrementOnDraft" /><label>Auto increment on draft</label>
       </div>
       <div class="checkbox-container">
-        <input
-          @change="
-            emit('changeSetting', {
-              key: 'autoDraft',
-              value: $event.target.checked,
-            })
-          "
-          type="checkbox"
-          :checked="props.settings.autoDraft"
-        /><label>Auto draft other teams</label>
+        <input @change="
+          emit('changeSetting', {
+            key: 'autoDraft',
+            value: $event.target.checked,
+          })
+        " type="checkbox" :checked="props.settings.autoDraft" /><label>Auto draft other teams</label>
       </div>
     </div>
-    <input
-      class="filter-table-searchbar"
-      v-model="search"
-      placeholder="Search by name. . ."
-      @input="emit('search', search)"
-    />
+
+
   </div>
 </template>
 
 <style>
 .draft-actions {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
-  height: 3rem;
+  padding: 0 1rem;
 }
 
 .filter-table-searchbar {
@@ -93,17 +86,22 @@ const search = ref("");
   font-size: 16px;
 }
 
-.team-select-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin: 1rem;
-  gap: 0.5rem;
+.team-select-container:not(.show) {
+  display: none;
 }
 
-.checkbox-container {
+.toolbar {
   display: flex;
   flex-direction: row;
-  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media screen and (min-width: 600x) {
+  .team-select-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 }
 </style>

@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from "vue";
 import Button from "./Button.vue";
 const emit = defineEmits(["reset"]);
 const props = defineProps({
@@ -7,9 +6,6 @@ const props = defineProps({
     type: String,
   },
 });
-const onSaveTeams = () => {
-  emit("saveTeams");
-};
 </script>
 
 <template>

@@ -14,7 +14,6 @@ const view = ref("draft");
 
 const {
   teams,
-  activeTeamIndex,
   fetchTeamData,
   setTeams,
   resetTeams,
@@ -50,42 +49,17 @@ onMounted(() => {
     <h1>Fantasy Basketball Manager</h1>
   </div>
   <div class="tab-bar">
-    <Tab
-      label="Draft board"
-      tab="draft"
-      :active="view === 'draft'"
-      @click="view = 'draft'"
-    />
-    <Tab
-      label="Team board"
-      tab="team"
-      :active="view === 'team'"
-      @click="view = 'team'"
-    />
+    <Tab label="Draft board" tab="draft" :active="view === 'draft'" @click="view = 'draft'" />
+    <Tab label="Team board" tab="team" :active="view === 'team'" @click="view = 'team'" />
   </div>
   <div class="tab-actions">
-    <DraftActions
-      v-if="view === 'draft'"
-      @search="search = $event"
-      @changeSetting="changeSetting($event.key, $event.value)"
-      :settings="draftSettings"
-      :teams="teams"
-    />
+    <DraftActions v-if="view === 'draft'" @search="search = $event"
+      @changeSetting="changeSetting($event.key, $event.value)" :settings="draftSettings" :teams="teams" />
     <TeamActions v-if="view === 'team'" @reset="resetTeams" />
   </div>
   <div class="tab-content">
-    <DraftGrid
-      :players="displayPlayers"
-      :cols="cols"
-      v-if="view === 'draft'"
-      @draftPlayer="onDrafted"
-    />
-    <TeamGrid
-      :teams="teams"
-      v-else-if="view === 'team'"
-      value.
-      @deletePlayer="deletePlayer"
-    />
+    <DraftGrid :players="displayPlayers" :cols="cols" v-if="view === 'draft'" @draftPlayer="onDrafted" />
+    <TeamGrid :teams="teams" v-else-if="view === 'team'" @deletePlayer="deletePlayer" />
   </div>
 </template>
 
@@ -109,14 +83,13 @@ onMounted(() => {
   align-items: center;
   background-color: rgb(0, 27, 85);
   color: white;
+  font-size: .5rem;
   max-width: 100vw;
- 
-    
 }
 
-@media screen and (max-width: 600px) {
-   .app-heading {
-    font-size: .5rem;
-   } 
+@media screen and (min-width: 600px) {
+  .app-heading {
+    font-size: 1rem;
   }
+}
 </style>
