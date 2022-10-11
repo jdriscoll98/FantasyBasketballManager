@@ -4,7 +4,13 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    players: {
+        type: Array,
+        required: true,
+    },
 });
+
+const emit = defineEmits(["deletePlayer"]);
 
 
 const getTeamEv = (team) => {
@@ -15,21 +21,37 @@ const getTeamEv = (team) => {
         }, 0)
     );
 };
+
+const onDeletePlayer = (player) =>{ 
+    const index = props.team.players.findIndex((p) => p.PLAYER === player.PLAYER);
+    emit("deletePlayer", index);
+}
+const getPlayerName = (name) => {
+        const [firstName, lastName] = name.split(" ")
+        if (lastName) {
+            return `${firstName[0]}. ${lastName}`
+        }
+        else {
+            return name;
+        }
+    
+}
+
 </script>
 
 <template>
     <div class="team">
         <div class="team-header-cell">{{ props.team.name }}</div>
-        <template v-for="(player, index) in props.team.players" :key="player.PLAYER">
+        <template v-for="(player, index) in players" :key="player.PLAYER">
             <div class="team-cell">
-                {{ player.PLAYER }}
-                <button v-if="!player.empty" @click="emit('deletePlayer', props.team, index)">
+                <strong>{{ player.POS }}</strong> {{ getPlayerName(player.PLAYER) }}
+                <button v-if="!player.empty" @click="onDeletePlayer(player)">
                     Delete
                 </button>
             </div>
         </template>
         <div class="team-footer-cell">
-            {{ props.team.name }} EV: {{ getTeamEv(props.team) }}
+           EV: {{ getTeamEv(props.team) }}
         </div>
     </div>
 </template>

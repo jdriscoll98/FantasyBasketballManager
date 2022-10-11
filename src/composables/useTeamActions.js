@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 export const useTeamActions = (teams) => {
   const resetTeams = () => {
@@ -15,8 +15,23 @@ export const useTeamActions = (teams) => {
   };
   const activeTeamIndex = ref(0);
 
+  const onSelectTeam = (e) => {
+    const index = teams.value.findIndex((team) => team.name === e.value.name);
+    activeTeamIndex.value = index;
+  };
+
+  const displayTeams = computed(() => {
+    if (window.innerWidth < 600) {
+      return teams.value.filter((_, index) => index === activeTeamIndex.value);
+    } else {
+      return teams.value;
+    }
+  });
+
   return {
     resetTeams,
     activeTeamIndex,
+    onSelectTeam,
+    displayTeams,
   };
 };

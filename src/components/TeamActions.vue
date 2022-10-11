@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from "vue";
 import Button from "./Button.vue";
-const emit = defineEmits(["reset", 'selectTeam']);
+const emit = defineEmits(["reset", 'selectTeam', 'viewChanged']);
 const props = defineProps({
   boardName: {
     type: String,
@@ -12,6 +12,10 @@ const props = defineProps({
   },
   activeTeamIndex: {
     type: Number,
+    required: true,
+  },
+  teamView: {
+    type: String,
     required: true,
   },
 });
@@ -29,11 +33,30 @@ watch(
   }
 );
 
+watch(
+  () => props.teamView, 
+  (newView) => {
+    view.value = viewOptions.find((option) => option.value === newView);
+  }
+)
+
+const viewOptions = [
+  { label: 'Draft order', value: 'draftOrder' },
+  { label: 'By position', value: 'teamActions' },
+];
+const view = ref(viewOptions.find((option) => option.value === props.teamView));
+
+
+const onViewChanged = () => {
+  emit('viewChanged', view.value.value)
+}
+
 
 </script>
 
 <template>
   <div class="team-actions">
+    <SelectButton v-model="view" :options="viewOptions" @change="onViewChanged" optionLabel="label" :unselectable="false"/>
     <div class="mobile-only">
       <Dropdown @change="onDropdownChange($event)" :options="teams" optionLabel="name" v-model="selectedTeam" />
     </div>
