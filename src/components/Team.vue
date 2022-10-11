@@ -1,4 +1,5 @@
 <script setup>
+import { POSITION_ORDER } from "../utils";
 const props = defineProps({
     team: {
         type: Object,
@@ -6,6 +7,10 @@ const props = defineProps({
     },
     players: {
         type: Array,
+        required: true,
+    },
+    teamView: {
+        type: String,
         required: true,
     },
 });
@@ -37,6 +42,15 @@ const getPlayerName = (name) => {
     
 }
 
+const getPosition = (position, index) => {
+    if (props.teamView === 'draftOrder') {
+        return position.replaceAll('"', '');
+    }
+    else {
+        return POSITION_ORDER[index]
+    }
+}
+
 </script>
 
 <template>
@@ -44,7 +58,7 @@ const getPlayerName = (name) => {
         <div class="team-header-cell">{{ props.team.name }}</div>
         <template v-for="(player, index) in players" :key="player.PLAYER">
             <div class="team-cell">
-                <strong>{{ player.POS }}</strong> {{ getPlayerName(player.PLAYER) }}
+                <strong>{{ getPosition(player.POS, index) }}</strong> {{ getPlayerName(player.PLAYER) }}
                 <button v-if="!player.empty" @click="onDeletePlayer(player)">
                     Delete
                 </button>

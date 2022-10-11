@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { POSITION_ORDER } from "../utils";
 import Team from "./Team.vue";
 const props = defineProps({
   teams: {
@@ -13,22 +13,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["deletePlayer"]);
-
-const POSITION_ORDER = [
-  "PG",
-  "SG",
-  "G",
-  "G",
-  "SF",
-  "PF",
-  "F",
-  "F",
-  "C",
-  "C",
-  "BN",
-  "BN",
-  "BN"
-]
 const getPlayers = (team) => {
   if (props.teamView === 'draftOrder') {
     return team.players;
@@ -54,7 +38,7 @@ const getPlayers = (team) => {
 <template>
   <div class="team-grid">
     <template v-for="team in props.teams" :key="team.name">
-      <Team :team="team" :players="getPlayers(team)" @delete-player="emit('deletePlayer', team, $event)"/>
+      <Team :team="team" :players="getPlayers(team)" @delete-player="emit('deletePlayer', team, $event)" :teamView="teamView"/>
     </template>
   </div>
 </template>
