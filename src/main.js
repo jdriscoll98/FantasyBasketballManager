@@ -10,10 +10,12 @@ import "primeicons/primeicons.css";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import SelectButton from "primevue/selectbutton";
+import Menu from "primevue/menu";
 
 const app = createApp(App);
 app.use(PrimeVue);
 app.component("Button", Button);
 app.component("Dropdown", Dropdown);
 app.component("SelectButton", SelectButton);
+app.component("Menu", Menu);
 app.mount("#app");

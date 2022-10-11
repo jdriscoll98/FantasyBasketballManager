@@ -38,7 +38,8 @@ const getPlayers = (team) => {
 <template>
   <div class="team-grid">
     <template v-for="team in props.teams" :key="team.name">
-      <Team :team="team" :players="getPlayers(team)" @delete-player="emit('deletePlayer', team, $event)" :teamView="teamView"/>
+      <Team :team="team" :players="getPlayers(team)" @delete-player="emit('deletePlayer', team, $event)"
+        :teamView="teamView" />
     </template>
   </div>
 </template>
@@ -48,5 +49,6 @@ const getPlayers = (team) => {
   display: flex;
   width: 100%;
   height: 100%;
+  overflow-x: scroll
 }
 </style>

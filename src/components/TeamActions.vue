@@ -10,28 +10,11 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-  activeTeamIndex: {
-    type: Number,
-    required: true,
-  },
   teamView: {
     type: String,
     required: true,
   },
 });
-
-function onDropdownChange(e) {
-  emit('selectTeam', selectedTeam);
-}
-
-const selectedTeam = ref(props.teams[props.activeTeamIndex]);
-
-watch(
-  () => props.teams,
-  (newTeams) => {
-    selectedTeam.value = newTeams[props.activeTeamIndex];
-  }
-);
 
 watch(
   () => props.teamView, 
@@ -57,9 +40,6 @@ const onViewChanged = () => {
 <template>
   <div class="team-actions">
     <SelectButton v-model="view" :options="viewOptions" @change="onViewChanged" optionLabel="label" :unselectable="false"/>
-    <div class="mobile-only">
-      <Dropdown @change="onDropdownChange($event)" :options="teams" optionLabel="name" v-model="selectedTeam" />
-    </div>
     <Button label="Reset teams" type="danger" @click="emit('reset')" />
   </div>
 </template>
