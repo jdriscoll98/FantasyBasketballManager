@@ -34,19 +34,6 @@ export const useTeams = () => {
     localStorage.setItem("allTeams", JSON.stringify(teams.value));
   }
 
-  const resetTeams = () => {
-    teams.value = teams.value.map((team) => {
-      team.players = team.players.map((_, index) => {
-        return {
-          PLAYER: `Player ${index + 1}`,
-          empty: true,
-        };
-      });
-      return team;
-    });
-    localStorage.setItem("allTeams", JSON.stringify(teams.value));
-  };
-
   const deletePlayer = (team, index) => {
     const emptyPlayer = {
       empty: true,
@@ -60,7 +47,6 @@ export const useTeams = () => {
     teams,
     fetchTeamData,
     setTeams,
-    resetTeams,
     deletePlayer,
   };
 };

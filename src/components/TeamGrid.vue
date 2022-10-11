@@ -1,4 +1,5 @@
 <script setup>
+import Team from "./Team.vue";
 const props = defineProps({
   teams: {
     type: Array,
@@ -8,84 +9,20 @@ const props = defineProps({
 
 const emit = defineEmits(["deletePlayer"]);
 
-const getTeamEv = (team) => {
-  // sum up each players total value
-  return Math.round(
-    team.players.reduce((acc, player) => {
-      return !player.empty ? acc + Number(player.TOTAL) : acc;
-    }, 0)
-  );
-};
 </script>
 
 <template>
   <div class="team-grid">
     <template v-for="team in props.teams" :key="team.name">
-      <div class="team">
-        <div class="team-header-cell">{{ team.name }}</div>
-        <template v-for="(player, index) in team.players" :key="player.PLAYER">
-          <div class="team-cell">
-            {{ player.PLAYER }}
-            <button
-              v-if="!player.empty"
-              @click="emit('deletePlayer', team, index)"
-            >
-              Delete
-            </button>
-          </div>
-        </template>
-        <div class="team-footer-cell">
-          {{ team.name }} EV: {{ getTeamEv(team) }}
-        </div>
-      </div>
+      <Team :team="team" />
     </template>
   </div>
 </template>
 
 <style>
 .team-grid {
-  display: grid;
+  display: flex;
   width: 100%;
   height: 100%;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: 100%;
-}
-
-.team-header-cell {
-  background-color: #eee;
-  display: flex;
-  align-items: center;
-}
-
-.team-footer-cell {
-  background-color: #eee;
-  display: flex;
-  align-items: center;
-  bottom: 0;
-}
-
-.team-cell {
-  border: 1px solid #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.team-cell button {
-  border: none;
-  cursor: pointer;
-  margin: 0 0.5rem;
-  text-decoration: underline;
-  color: red;
-}
-
-.team {
-  width: 100%;
-  display: grid;
-  grid-template-rows: 2rem repeat(14, 3.5rem);
-}
-
-.team-player {
-  height: 3rem;
 }
 </style>

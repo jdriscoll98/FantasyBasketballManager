@@ -8,15 +8,15 @@ import Tab from "./components/Tab.vue";
 import { useTeams } from "./composables/useTeams.js";
 import { usePlayers } from "./composables/usePlayers.js";
 import { useDraftActions } from "./composables/useDraftActions.js";
+import { useTeamActions } from "./composables/useTeamActions.js";
 import { useDraft } from "./composables/useDraft.js";
 
-const view = ref("draft");
+const view = ref("team");
 
 const {
   teams,
   fetchTeamData,
   setTeams,
-  resetTeams,
   deletePlayer,
 } = useTeams();
 
@@ -33,6 +33,24 @@ const { onDrafted } = useDraft(
   updateActiveTeam,
   sortedPlayersByAdp
 );
+
+const { activeTeamIndex, resetTeams } = useTeamActions(
+  teams,
+);
+
+const displayTeams = computed(() => {
+  if (window.innerWidth < 600) {
+    return teams.value.filter((_, index) => index === activeTeamIndex.value);
+  }
+  else {
+    return teams.value
+  }
+})
+
+const onSelectTeam = (e) => {
+  const index = teams.value.findIndex((team) => team.name === e.value.name);
+  activeTeamIndex.value = index;
+}
 
 const cols = computed(() => {
   return allPlayers.value.length > 0 ? Object.keys(allPlayers.value[0]) : [];
@@ -55,11 +73,12 @@ onMounted(() => {
   <div class="tab-actions">
     <DraftActions v-if="view === 'draft'" @search="search = $event"
       @changeSetting="changeSetting($event.key, $event.value)" :settings="draftSettings" :teams="teams" />
-    <TeamActions v-if="view === 'team'" @reset="resetTeams" />
+    <TeamActions v-if="view === 'team'" @reset="resetTeams" :teams="teams" :activeTeamIndex="activeTeamIndex"
+      @selectTeam="onSelectTeam" />
   </div>
   <div class="tab-content">
     <DraftGrid :players="displayPlayers" :cols="cols" v-if="view === 'draft'" @draftPlayer="onDrafted" />
-    <TeamGrid :teams="teams" v-else-if="view === 'team'" @deletePlayer="deletePlayer" />
+    <TeamGrid :teams="displayTeams" v-else-if="view === 'team'" @deletePlayer="deletePlayer" />
   </div>
 </template>
 
@@ -77,6 +96,10 @@ onMounted(() => {
   grid-template-rows: 3rem auto 1fr;
 }
 
+.tab-content {
+  flex: 1;
+}
+
 .app-heading {
   display: flex;
   justify-content: center;
@@ -85,10 +108,12 @@ onMounted(() => {
   color: white;
   font-size: .5rem;
   max-width: 100vw;
+  height: 3rem;
 }
 
 @media screen and (min-width: 600px) {
   .app-heading {
+    height: 3em;
     font-size: 1rem;
   }
 }
