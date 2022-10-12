@@ -58,10 +58,15 @@ export const usePlayers = (teams, search) => {
       });
   }
 
+  const cols = computed(() => {
+    return allPlayers.value.length > 0 ? Object.keys(allPlayers.value[0]) : [];
+  });
+
   return {
     allPlayers,
     displayPlayers,
     fetchPlayerData,
     sortedPlayersByAdp,
+    cols,
   };
 };

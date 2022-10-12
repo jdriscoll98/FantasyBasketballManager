@@ -1,0 +1,41 @@
+Player:
+    ADP
+    Name
+    Roster slot
+    Position(s)
+    Team
+    Games Played
+    Injured
+    ----- per game below this line -----
+    Minutes
+    Field goals made
+    Field goals attempted
+    Free throws made
+    Free throw percentage
+    3 point field goals made
+    3 point field goal percentage
+    Points
+    Defensive rebounds
+    Offensive rebounds
+    Total rebounds
+    Assists
+    Steals
+    Blocks
+    Turnovers
+
+Team: 
+    Name
+    Draft Position
+    Players
+
+Stat Categories: (set to how much each category is worth)
+    Points
+    Rebounds
+    Assists
+    Steals
+    Blocks
+    Turnovers
+    Field goals made
+    Field goals attempted
+    Free throws made
+    Free throws attempted
