@@ -25,7 +25,7 @@ watch(
 
 const viewOptions = [
   { label: 'Draft order', value: 'draftOrder' },
-  { label: 'By position', value: 'teamActions' },
+  { label: 'By position', value: 'positionOrder' },
 ];
 const view = ref(viewOptions.find((option) => option.value === props.teamView));
 

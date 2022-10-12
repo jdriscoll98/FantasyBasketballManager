@@ -61,8 +61,8 @@ onMounted(() => {
   <div class="tab-actions">
     <DraftActions v-if="view === 'draft'" @search="search = $event"
       @changeSetting="changeSetting($event.key, $event.value)" :settings="draftSettings" :teams="teams" />
-    <TeamActions v-if="view === 'team'" @reset="resetTeams" :teams="teams" 
-      @selectTeam="onSelectTeam" @viewChanged="teamView = $event" :teamView="teamView" />
+    <TeamActions v-if="view === 'team'" @reset="resetTeams" :teams="teams" @selectTeam="onSelectTeam"
+      @viewChanged="teamView = $event" :teamView="teamView" />
   </div>
   <div class="tab-content">
     <DraftGrid :players="displayPlayers" :cols="cols" v-if="view === 'draft'" @draftPlayer="onDrafted" />

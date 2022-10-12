@@ -6,10 +6,6 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    players: {
-        type: Array,
-        required: true,
-    },
     teamView: {
         type: String,
         required: true,
@@ -30,11 +26,14 @@ const getTeamEv = (team) => {
 
 const onDeletePlayer = (player) => {
     const index = props.team.players.findIndex((p) => p.PLAYER === player.PLAYER);
-    emit("deletePlayer", index);
+    if (index > -1) {
+        props.team.players[index] = { empty: true, position: player.position, PLAYER: `Player ${index + 1}` };
+        emit("deletePlayer", props.team, player);
+    }
 }
 const getPlayerName = (name) => {
     const [firstName, lastName] = name.split(" ")
-    if (lastName) {
+    if (firstName !== "Player" && lastName) {
         return `${firstName[0]}. ${lastName}`
     }
     else {
@@ -44,7 +43,7 @@ const getPlayerName = (name) => {
 }
 
 const getPosition = (position, index) => {
-    if (props.teamView === 'draftOrder') {
+    if (props.teamView === 'draftOrder' || index > 9) {
         return position ? position.replaceAll('"', '') : "BN";
     }
     else {
@@ -75,6 +74,31 @@ const toggle = (event, player) => {
     menu.value.toggle(event);
 };
 
+const getPlayers = (team) => {
+    if (props.teamView === 'draftOrder') {
+        return team.players;
+    }
+    else {
+        const players = Array(13).fill(0).map((_, i) => {
+            const player = team.players.find((p) => p.position === POSITION_ORDER[i]);
+            return player ? player : { empty: true, position: POSITION_ORDER[i], PLAYER: `Player ${i + 1}` };
+        });
+        const remainingPlayers = [...team.players];
+        POSITION_ORDER.forEach((pos, index) => {
+            const player = remainingPlayers.find((player) => player.POS?.includes(pos));
+            if (player) {
+                players[index] = player;
+                remainingPlayers.splice(remainingPlayers.indexOf(player), 1);
+            }
+        })
+        remainingPlayers.forEach((player) => {
+            const emptyIndex = players.findIndex((p) => p.empty && p.position === "BN");
+            players[emptyIndex] = player;
+        })
+        return players;
+    }
+}
+
 </script>
 
 <template>
@@ -82,7 +106,7 @@ const toggle = (event, player) => {
         <Menu id="overlay_menu" ref="menu" :model="items" :popup="true" />
 
         <div class="team-header-cell">{{ props.team.name }}</div>
-        <template v-for="(player, index) in players" :key="player.PLAYER">
+        <template v-for="(player, index) in getPlayers(props.team)" :key="player.PLAYER">
             <div class="team-cell">
                 <div class="position-box">{{ getPosition(player.POS, index) }}</div>
                 <div class="player-box">
@@ -91,9 +115,6 @@ const toggle = (event, player) => {
                 </div>
                 <Button icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-plain"
                     @click="toggle($event, player)" />
-                <!-- <button v-if="!player.empty" @click="onDeletePlayer(player)">
-                    Delete
-                </button> -->
             </div>
         </template>
         <div class="team-footer-cell">
@@ -184,6 +205,10 @@ const toggle = (event, player) => {
 .team-cell:nth-child(10)>.position-box,
 .team-cell:nth-child(11)>.position-box {
     color: yellowgreen;
+}
+
+.team-cell:nth-child(12) {
+    border-top: 5px solid #ddd;
 }
 
 .player-box {
