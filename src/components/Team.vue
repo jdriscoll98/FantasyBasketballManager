@@ -1,6 +1,6 @@
 <script setup>
 import { POSITION_ORDER } from "../utils";
-import { ref } from "vue";
+import { onMounted, onRenderTracked, ref, watch } from "vue";
 const props = defineProps({
     team: {
         type: Object,
@@ -98,6 +98,34 @@ const getPlayers = (team) => {
     }
 }
 
+const getRanking = (player, index) => {
+    if (player.empty || props.teamView === 'draftOrder') {
+        return "";
+    }
+    const allTeams = document.querySelectorAll(".team")
+    const allPlayersEv = Array.from(allTeams).map((team) => {
+        return Array.from(team.querySelectorAll(".player-ev")).map((player) => {
+            return player.innerText.replace("\r", "").replace("\n", "").replace("EV: ", "");
+        })
+    })
+    const allPlayersAtIndex = allPlayersEv.map((team) => {
+        return Number(team[index]);
+    })
+
+    const avg = allPlayersAtIndex.reduce((acc, ev) => {
+        return acc + ev;
+    }, 0) / allPlayersAtIndex.length;
+    if (Number(player.TOTAL) / avg > 1.1) {
+        return 'top';
+    }
+    else if (Number(player.TOTAL) / avg < 0.9) {
+        return "bottom";
+    }
+    else {
+        return "middle";
+    }
+}
+
 </script>
 
 <template>
@@ -106,11 +134,11 @@ const getPlayers = (team) => {
 
         <div class="team-header-cell">{{ props.team.name }}</div>
         <template v-for="(player, index) in getPlayers(props.team)" :key="player.PLAYER">
-            <div class="team-cell">
+            <div class="team-cell" :data-player="player.PLAYER">
                 <div class="position-box">{{ getPosition(player.POS, index) }}</div>
                 <div class="player-box">
                     <span class="player-name">{{ getPlayerName(player.PLAYER) }}</span>
-                    <span class="player-ev">{{ player.TOTAL }}</span>
+                    <span class="player-ev" v-if="!player.empty">{{ player.TOTAL }}</span>
                 </div>
                 <Button icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-plain"
                     @click="toggle($event, player)" />
@@ -143,6 +171,18 @@ const getPlayers = (team) => {
     justify-content: space-between;
     white-space: nowrap;
     flex: 1;
+}
+
+.team-cell.top {
+    background-color: rgba(0, 255, 0, 0.25);
+}
+
+.team-cell.middle {
+    background-color: rgba(0, 255, 255, 0.25);
+}
+
+.team-cell.bottom {
+    background-color: rgba(255, 0, 0, 0.25);
 }
 
 /* take up whole screen on mobile */

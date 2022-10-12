@@ -1,6 +1,8 @@
 import { ref, computed } from "vue";
 
 export const useTeamActions = (teams) => {
+  const teamView = ref("draftOrder");
+
   const resetTeams = () => {
     teams.value = teams.value.map((team) => {
       team.players = team.players.map((_, index) => {
@@ -13,12 +15,6 @@ export const useTeamActions = (teams) => {
     });
     localStorage.setItem("allTeams", JSON.stringify(teams.value));
   };
-  const activeTeamIndex = ref(0);
-
-  const onSelectTeam = (e) => {
-    const index = teams.value.findIndex((team) => team.name === e.value.name);
-    activeTeamIndex.value = index;
-  };
 
   const displayTeams = computed(() => {
     if (window.innerWidth < 600) {
@@ -30,8 +26,7 @@ export const useTeamActions = (teams) => {
 
   return {
     resetTeams,
-    activeTeamIndex,
-    onSelectTeam,
     displayTeams,
+    teamView,
   };
 };

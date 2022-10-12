@@ -1,9 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import DraftGrid from "./components/DraftGrid.vue";
-import DraftActions from "./components/DraftActions.vue";
 import TeamGrid from "./components/TeamGrid.vue";
-import TeamActions from "./components/TeamActions.vue";
 import Tab from "./components/Tab.vue";
 import { useTeams } from "./composables/useTeams.js";
 import { usePlayers } from "./composables/usePlayers.js";
@@ -34,11 +32,10 @@ const { onDrafted } = useDraft(
   sortedPlayersByAdp
 );
 
-const { resetTeams, onSelectTeam } = useTeamActions(
+const { resetTeams, teamView } = useTeamActions(
   teams,
 );
 
-const teamView = ref('draftOrder');
 
 const cols = computed(() => {
   return allPlayers.value.length > 0 ? Object.keys(allPlayers.value[0]) : [];
@@ -58,15 +55,11 @@ onMounted(() => {
     <Tab label="Draft board" tab="draft" :active="view === 'draft'" @click="view = 'draft'" />
     <Tab label="Team board" tab="team" :active="view === 'team'" @click="view = 'team'" />
   </div>
-  <div class="tab-actions">
-    <DraftActions v-if="view === 'draft'" @search="search = $event"
-      @changeSetting="changeSetting($event.key, $event.value)" :settings="draftSettings" :teams="teams" />
-    <TeamActions v-if="view === 'team'" @reset="resetTeams" :teams="teams" @selectTeam="onSelectTeam"
-      @viewChanged="teamView = $event" :teamView="teamView" />
-  </div>
   <div class="tab-content">
-    <DraftGrid :players="displayPlayers" :cols="cols" v-if="view === 'draft'" @draftPlayer="onDrafted" />
-    <TeamGrid :teams="teams" v-else-if="view === 'team'" @deletePlayer="deletePlayer" :teamView="teamView" />
+    <DraftGrid v-if="view === 'draft'" :changeSetting="changeSetting" :players="displayPlayers" :cols="cols"
+      @draftPlayer="onDrafted" :draftSettings="draftSettings" :teams="teams" @searchChanged="search = $event" />
+    <TeamGrid v-else-if="view === 'team'" :teams="teams" @deletePlayer="deletePlayer" :teamView="teamView"
+      :resetTeams="resetTeams" />
   </div>
 </template>
 
@@ -86,6 +79,8 @@ onMounted(() => {
 
 .tab-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-heading {

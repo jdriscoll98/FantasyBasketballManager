@@ -17,7 +17,7 @@ const props = defineProps({
 });
 
 watch(
-  () => props.teamView, 
+  () => props.teamView,
   (newView) => {
     view.value = viewOptions.find((option) => option.value === newView);
   }
@@ -39,7 +39,8 @@ const onViewChanged = () => {
 
 <template>
   <div class="team-actions">
-    <SelectButton v-model="view" :options="viewOptions" @change="onViewChanged" optionLabel="label" :unselectable="false"/>
+    <SelectButton v-model="view" :options="viewOptions" @change="onViewChanged" optionLabel="label"
+      :unselectable="false" />
     <Button label="Reset teams" type="danger" @click="emit('reset')" />
   </div>
 </template>
@@ -49,7 +50,6 @@ const onViewChanged = () => {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  height: 3rem;
 }
 
 .team-name-input {

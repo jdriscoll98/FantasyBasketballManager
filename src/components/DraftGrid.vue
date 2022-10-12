@@ -1,6 +1,6 @@
 <script setup>
-import { computed } from "vue";
 import DraftButton from "./Button.vue";
+import DraftActions from "./DraftActions.vue"
 const props = defineProps({
   players: {
     type: Array,
@@ -10,54 +10,51 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  changeSetting: {
+    type: Function,
+    required: true,
+  },
+  draftSettings: {
+    type: Object,
+    required: true,
+  },
+  teams: {
+    type: Array,
+    required: true,
+  }
 });
 
-const emit = defineEmits(["draftPlayer"]);
-
-function handleCheckboxChanged(e, player) {
-  player.selected = e.target.checked;
-}
+const emit = defineEmits(["draftPlayer", "searchChanged"]);
 
 function onDraftButtonClicked(player) {
   emit("draftPlayer", player);
 }
 
-const excludedCols = [];
-
-const filterdCols = computed(() => {
-  return props.cols.filter((col) => !excludedCols.includes(col));
-});
 </script>
 
 <template>
+  <DraftActions @search="emit('searchChanged', $event)" @changeSetting="changeSetting($event.key, $event.value)"
+    :settings="draftSettings" :teams="teams" />
   <div class="draft-grid">
     <!-- Header -->
     <div class="draft-header-cell"></div>
-    <template v-for="col in filterdCols" :key="col">
+    <template v-for="col in props.cols" :key="col">
       <div class="draft-header-cell">{{ col }}</div>
     </template>
     <!--  End Header -->
     <!--  Player Rows -->
     <template v-for="player in props.players" :key="player.name">
-      <div
-        :class="{
+      <div :class="{
+        'draft-cell': true,
+        'draft-cell--selected': player.selected,
+      }">
+        <DraftButton @click="onDraftButtonClicked(player)" label="Draft" type="success" />
+      </div>
+      <template v-for="col in props.cols" :key="col">
+        <div :class="{
           'draft-cell': true,
           'draft-cell--selected': player.selected,
-        }"
-      >
-        <DraftButton
-          @click="onDraftButtonClicked(player)"
-          label="Draft"
-          type="success"
-        />
-      </div>
-      <template v-for="col in filterdCols" :key="col">
-        <div
-          :class="{
-            'draft-cell': true,
-            'draft-cell--selected': player.selected,
-          }"
-        >
+        }">
           {{ player[col] }}
         </div>
       </template>

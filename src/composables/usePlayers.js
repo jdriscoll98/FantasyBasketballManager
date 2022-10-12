@@ -39,29 +39,23 @@ export const usePlayers = (teams, search) => {
   });
 
   function fetchPlayerData() {
-    const savedPlayers = localStorage.getItem("allPlayers");
-    if (savedPlayers) {
-      allPlayers.value = JSON.parse(savedPlayers);
-    } else {
-      fetch("data.csv")
-        .then((response) => response.text())
-        .then((text) => {
-          const lines = text.split("\n");
-          const cols = lines[0].split(",");
-          const players = [];
-          for (let i = 1; i < lines.length; i++) {
-            const player = {};
-            const line = lines[i].replace(/(".*),(.*")/gm, "$1 $2");
-            const currentline = line.split(",");
-            for (let j = 0; j < cols.length; j++) {
-              player[cols[j].trim()] = currentline[j];
-            }
-            players.push(player);
+    fetch("data.csv")
+      .then((response) => response.text())
+      .then((text) => {
+        const lines = text.split("\n");
+        const cols = lines[0].split(",");
+        const players = [];
+        for (let i = 1; i < lines.length; i++) {
+          const player = {};
+          const line = lines[i].replace(/(".*),(.*")/gm, "$1 $2");
+          const currentline = line.split(",");
+          for (let j = 0; j < cols.length; j++) {
+            player[cols[j].trim()] = currentline[j].trim();
           }
-          allPlayers.value = players;
-          localStorage.setItem("allPlayers", JSON.stringify(players));
-        });
-    }
+          players.push(player);
+        }
+        allPlayers.value = players;
+      });
   }
 
   return {
