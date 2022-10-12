@@ -80,10 +80,9 @@ const getPlayers = (team) => {
     }
     else {
         const players = Array(13).fill(0).map((_, i) => {
-            const player = team.players.find((p) => p.position === POSITION_ORDER[i]);
-            return player ? player : { empty: true, position: POSITION_ORDER[i], PLAYER: `Player ${i + 1}` };
+            return { empty: true, position: POSITION_ORDER[i], PLAYER: `Player ${i + 1}` };
         });
-        const remainingPlayers = [...team.players];
+        const remainingPlayers = [...team.players.filter((p) => !p.empty)];
         POSITION_ORDER.forEach((pos, index) => {
             const player = remainingPlayers.find((player) => player.POS?.includes(pos));
             if (player) {
