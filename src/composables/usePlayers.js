@@ -12,7 +12,15 @@ export const usePlayers = (teams, search) => {
         );
       })
       .sort((a, b) => {
-        return Number(b.TOTAL) - Number(a.TOTAL);
+        // sort by 50% total and 50% adp
+        const aTotal = Number(a.TOTAL);
+        const bTotal = Number(b.TOTAL);
+        const aAdp = Number(a.ADP || 1000);
+        const bAdp = Number(b.ADP || 1000);
+        if (Math.abs(aTotal - bTotal) < 0.05 * aTotal) {
+          return aAdp - bAdp;
+        }
+        return bTotal - aTotal;
       });
   });
 

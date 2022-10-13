@@ -2,14 +2,12 @@
 import { ref, computed, onMounted } from "vue";
 import DraftGrid from "./components/DraftGrid.vue";
 import TeamGrid from "./components/TeamGrid.vue";
-import Tab from "./components/Tab.vue";
 import { useTeams } from "./composables/useTeams.js";
 import { usePlayers } from "./composables/usePlayers.js";
 import { useDraftActions } from "./composables/useDraftActions.js";
 import { useTeamActions } from "./composables/useTeamActions.js";
 import { useDraft } from "./composables/useDraft.js";
-
-const view = ref("draft");
+import { addEventListeners } from "./utils/helpers.js"
 
 const {
   teams,
@@ -40,22 +38,24 @@ onMounted(() => {
   fetchPlayerData();
   fetchTeamData();
 });
+
 </script>
 
 <template>
-  <div class="app-heading">
-    <h1>Fantasy Basketball Manager</h1>
-  </div>
-  <div class="tab-bar">
-    <Tab label="Draft board" tab="draft" :active="view === 'draft'" @click="view = 'draft'" />
-    <Tab label="Team board" tab="team" :active="view === 'team'" @click="view = 'team'" />
-  </div>
-  <div class="tab-content">
-    <DraftGrid v-if="view === 'draft'" :changeSetting="changeSetting" :players="displayPlayers" :cols="cols"
-      @draftPlayer="onDrafted" :draftSettings="draftSettings" :teams="teams" @searchChanged="search = $event" />
-    <TeamGrid v-else-if="view === 'team'" :teams="teams" @deletePlayer="deletePlayer" :teamView="teamView"
-      :resetTeams="resetTeams" />
-  </div>
+  <ukg-nav-header heading="Fantasy Basketball Manager"></ukg-nav-header>
+  <ukg-tab-bar-panel>
+    <ukg-tab-bar>
+      <ukg-tab identifier="draft" label="Draft board" is-active></ukg-tab>
+      <ukg-tab identifier="team" label="Team board"></ukg-tab>
+    </ukg-tab-bar>
+    <div id="draft">
+      <DraftGrid id="draft" :changeSetting="changeSetting" :players="displayPlayers" :cols="cols"
+        @draftPlayer="onDrafted" :draftSettings="draftSettings" :teams="teams" @searchChanged="search = $event" />
+    </div>
+    <div id="team">
+      <TeamGrid id="team" :teams="teams" @deletePlayer="deletePlayer" :teamView="teamView" :resetTeams="resetTeams" />
+    </div>
+  </ukg-tab-bar-panel>
 </template>
 
 <style scoped>
@@ -82,7 +82,6 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgb(0, 27, 85);
   color: white;
   font-size: .5rem;
   max-width: 100vw;

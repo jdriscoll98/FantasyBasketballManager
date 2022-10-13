@@ -1,4 +1,4 @@
-import { POSITION_ORDER, POSITION_COUNT } from "../utils/";
+import { POSITION_ORDER, POSITION_COUNT } from "../utils/constants";
 
 export const useDraft = (
   teams,

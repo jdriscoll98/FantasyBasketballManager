@@ -1,5 +1,4 @@
 <script setup>
-import DraftButton from "./Button.vue";
 import DraftActions from "./DraftActions.vue"
 const props = defineProps({
   players: {
@@ -30,37 +29,72 @@ function onDraftButtonClicked(player) {
   emit("draftPlayer", player);
 }
 
+const isColumnSticky = (col) => {
+  if (col === "PLAYER" || col === "ADP") {
+    return "left";
+  }
+  else if (col === "TOTAL") {
+    return "right";
+  }
+  else {
+    return false;
+  }
+}
+
+const toolbarButtons = [
+  {
+    icon: 'person-add',
+    label: "Draft",
+    emphasis: 'mid',
+    clickHandler: () => {
+      console.log('Draft button clicked');
+    },
+  },
+  {
+    icon: 'settings',
+    label: "Settings",
+    emphasis: 'mid',
+    clickHandler: () => {
+      console.log('Settings button clicked');
+    },
+  },
+]
+
 </script>
 
 <template>
-  <DraftActions @search="emit('searchChanged', $event)" @changeSetting="changeSetting($event.key, $event.value)"
-    :settings="draftSettings" :teams="teams" />
-  <div class="draft-grid">
-    <!-- Header -->
-    <div class="draft-header-cell"></div>
-    <template v-for="col in props.cols" :key="col">
-      <div class="draft-header-cell">{{ col }}</div>
-    </template>
-    <!--  End Header -->
-    <!--  Player Rows -->
-    <template v-for="player in props.players" :key="player.name">
-      <div :class="{
-        'draft-cell': true,
-        'draft-cell--selected': player.selected,
-      }">
-        <DraftButton @click="onDraftButtonClicked(player)" label="Draft" type="success" />
-      </div>
-      <template v-for="col in props.cols" :key="col">
-        <div :class="{
-          'draft-cell': true,
-          'draft-cell--selected': player.selected,
-        }">
-          {{ player[col] }}
-        </div>
-      </template>
-    </template>
-    <!--  End Player Rows -->
-  </div>
+  <ukg-data-table-container>
+    <ukg-data-table>
+      <ukg-toolbar slot="left" id="toolbar" :leftButtons="toolbarButtons"></ukg-toolbar>
+      <ukg-searchbar aria-label="searchbar" slot="right" has-filter>
+        <ukg-button slot="filter" icon-only>
+          <ukg-icon slot="icon-only" name="filter"></ukg-icon>
+        </ukg-button>
+      </ukg-searchbar>
+      <table>
+        <thead>
+          <tr>
+            <ukg-th type="empty" sticky="left"></ukg-th>
+            <template v-for="col in props.cols">
+              <ukg-th :sticky="isColumnSticky(col)">{{ col }}</ukg-th>
+            </template>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="player in props.players" :key="player.PLAYER">
+            <tr>
+              <td>
+                <ukg-checkbox-icon></ukg-checkbox-icon>
+              </td>
+              <template v-for="col in props.cols" :key="player[col]">
+                <td>{{ player[col] }}</td>
+              </template>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </ukg-data-table>
+  </ukg-data-table-container>
 </template>
 
 <style scoped>

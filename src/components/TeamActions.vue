@@ -1,6 +1,5 @@
 <script setup>
 import { ref, watch } from "vue";
-import Button from "./Button.vue";
 const emit = defineEmits(["reset", 'selectTeam', 'viewChanged']);
 const props = defineProps({
   boardName: {
@@ -39,9 +38,11 @@ const onViewChanged = () => {
 
 <template>
   <div class="team-actions">
-    <SelectButton v-model="view" :options="viewOptions" @change="onViewChanged" optionLabel="label"
-      :unselectable="false" />
-    <Button label="Reset teams" type="danger" @click="emit('reset')" />
+    <ukg-button-toggle type="Single">
+      <ukg-button is-toggle value="draft">Draft order</ukg-button>
+      <ukg-button is-toggle value="position">Position order</ukg-button>
+    </ukg-button-toggle>
+    <ukg-button emphasis="high" @click="emit('reset')">Reset teams</ukg-button>
   </div>
 </template>
 

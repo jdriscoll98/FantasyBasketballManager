@@ -1,5 +1,5 @@
 <script setup>
-import { POSITION_ORDER } from "../utils";
+import { POSITION_ORDER } from "../utils/constants";
 import { onMounted, onRenderTracked, ref, watch } from "vue";
 const props = defineProps({
     team: {
@@ -137,7 +137,9 @@ const getRanking = (player, index) => {
             <div class="team-cell" :data-player="player.PLAYER">
                 <div class="position-box">{{ getPosition(player.POS, index) }}</div>
                 <div class="player-box">
-                    <span class="player-name">{{ getPlayerName(player.PLAYER) }}</span>
+                    <span class="player-name" :class="{
+                        'player-name--empty': player.empty,
+                    }">{{ getPlayerName(player.PLAYER) }}</span>
                     <span class="player-ev" v-if="!player.empty">{{ player.TOTAL }}</span>
                 </div>
                 <Button icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-plain"
@@ -257,7 +259,7 @@ const getRanking = (player, index) => {
     flex: 1;
 }
 
-.player-box>.player-name {
+.player-box>.player-name:not(.player-name--empty) {
     font-weight: bold;
 }
 </style>
