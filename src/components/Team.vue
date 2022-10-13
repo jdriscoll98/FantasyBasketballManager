@@ -44,7 +44,7 @@ const getPlayerName = (name) => {
 
 const getPosition = (position, index) => {
     if (props.teamView === 'draftOrder' || index > 9) {
-        return position ? position.replaceAll('"', '') : "BN";
+        return position ? position.replaceAll('"', '').split(" ")[0] : "BN";
     }
     else {
         return POSITION_ORDER[index]
@@ -132,8 +132,20 @@ const getRanking = (player, index) => {
     <div class="team">
         <Menu id="overlay_menu" ref="menu" :model="items" :popup="true" />
 
-        <div class="team-header-cell">{{ props.team.name }}</div>
-        <template v-for="(player, index) in getPlayers(props.team)" :key="player.PLAYER">
+        <ukg-list class="ukg-surface-light">
+            <ukg-list-section>
+                {{ props.team.name }}
+            </ukg-list-section>
+            <template v-for="(player, index) of getPlayers(props.team)">
+                <ukg-list-item has-divider>
+                    <ukg-avatar slot="left" :initials="getPosition(player.POS, index)"></ukg-avatar>
+                    <p class="ukg-line-primary" :style="{'white-space': 'nowrap'}">{{ player.PLAYER }}</p>
+                    <p class="ukg-line-secondary">EV: {{ player.TOTAL }}</p>
+                    <ukg-button slot="right" icon-only parent-icon="menu-overflow"></ukg-button>
+                </ukg-list-item>
+            </template>
+        </ukg-list>
+        <!-- <template v-for="(player, index) in getPlayers(props.team)" :key="player.PLAYER">
             <div class="team-cell" :data-player="player.PLAYER">
                 <div class="position-box">{{ getPosition(player.POS, index) }}</div>
                 <div class="player-box">
@@ -145,7 +157,7 @@ const getRanking = (player, index) => {
                 <Button icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-plain"
                     @click="toggle($event, player)" />
             </div>
-        </template>
+        </template> -->
         <div class="team-footer-cell">
             Total EV: {{ getTeamEv(props.team) }}
         </div>
@@ -161,8 +173,8 @@ const getRanking = (player, index) => {
 
 .team-footer-cell {
     background-color: #eee;
-    display: flex;
     align-items: center;
+    text-align: center;
     bottom: 0;
 }
 

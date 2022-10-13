@@ -9,7 +9,7 @@ export const useTeams = () => {
       teams.value = JSON.parse(savedTeams);
     } else {
       // generate empty teams
-      teams.value = Array(10)
+      teams.value = Array(8)
         .fill(0)
         .map((_, i) => {
           const players = Array(13)

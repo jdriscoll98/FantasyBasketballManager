@@ -1,5 +1,6 @@
 <script setup>
-import DraftActions from "./DraftActions.vue"
+import { onMounted, ref, computed } from "vue";
+import { addEventListeners } from "../utils/helpers";
 const props = defineProps({
   players: {
     type: Array,
@@ -25,11 +26,14 @@ const props = defineProps({
 
 const emit = defineEmits(["draftPlayer", "searchChanged"]);
 
-function onDraftButtonClicked(player) {
+function draftPlayer(player) {
   emit("draftPlayer", player);
 }
 
 const isColumnSticky = (col) => {
+  if (window.innerWidth < 600) {
+    return false;
+  }
   if (col === "PLAYER" || col === "ADP") {
     return "left";
   }
@@ -41,28 +45,112 @@ const isColumnSticky = (col) => {
   }
 }
 
-const toolbarButtons = [
-  {
-    icon: 'person-add',
-    label: "Draft",
-    emphasis: 'mid',
-    clickHandler: () => {
-      console.log('Draft button clicked');
+const selectedPlayers = ref([]);
+
+
+const toolbarButtons = computed(() => {
+  const buttons = [
+    {
+      icon: 'person-add',
+      label: "Draft",
+      emphasis: 'mid',
+      clickHandler: () => {
+        document.querySelector("ukg-dialog#draft-dialog").present();
+      },
     },
-  },
-  {
-    icon: 'settings',
-    label: "Settings",
-    emphasis: 'mid',
-    clickHandler: () => {
-      console.log('Settings button clicked');
+    {
+      icon: 'settings',
+      label: "Settings",
+      emphasis: 'mid',
+      clickHandler: () => {
+        document.querySelector("ukg-modal#settings-modal").present();
+      },
     },
-  },
-]
+  ]
+  if (props.draftSettings.mockDraft) {
+    return buttons.filter((button) => button.label !== "Draft");
+  }
+  return buttons;
+})
+
+onMounted(() => {
+  addEventListeners([
+    {
+      selector: "ukg-data-table",
+      event: "ukgCheckboxChanged",
+      handler: (e) => {
+        const playerName = e.target.getAttribute("data-player");
+        const player = props.players.find((p) => p.PLAYER === playerName);
+        if (selectedPlayers.value.includes(player)) {
+          selectedPlayers.value = selectedPlayers.value.filter((p) => p.PLAYER !== player.PLAYER);
+        }
+        else {
+          selectedPlayers.value = [...selectedPlayers.value, player];
+        }
+      },
+    },
+    {
+      selector: "ukg-switch#mock-draft-switch",
+      event: "ukgChange",
+      handler: (e) => {
+        props.changeSetting("mockDraft", e.target.checked);
+      },
+    },
+    {
+      selector: "ukg-select#drafting-team-select",
+      event: "ukgChange",
+      handler: (e) => {
+        props.changeSetting("draftingTeam", e.target.value);
+      },
+    }
+  ])
+})
 
 </script>
 
 <template>
+  <ukg-dialog header-divider header="Draft players" id="draft-dialog" content-type="custom" with-button-group x
+    :ready-ok="selectedPlayers.length !== 0">
+    <div style="width: 100%">
+      <div v-if="selectedPlayers.length !== 0">
+        <ukg-list>
+          <template v-for="player in selectedPlayers" :key="player.PLAYER">
+            <ukg-list-item has-divider>
+              <p class="ukg-line-primary">{{ player.PLAYER }}</p>
+            </ukg-list-item>
+          </template>
+        </ukg-list>
+      </div>
+      <div v-else>
+        <p style="text-align: center">No players selected</p>
+
+      </div>
+
+    </div>
+
+  </ukg-dialog>
+  <ukg-modal id="settings-modal">
+    <ukg-nav-header is-overlay :show-menu-button="false" show-close-button heading="Draft settings"></ukg-nav-header>
+    <ukg-list>
+      <ukg-list-item>
+        <p class="ukg-line-primary">Mock draft mode</p>
+        <ukg-switch slot="right" id="mock-draft-switch" :checked="draftSettings.mockDraft"></ukg-switch>
+      </ukg-list-item>
+      <ukg-list-item>
+        <p class="ukg-line-primary">Drafting team</p>
+        <ukg-input-container slot="right">
+          <ukg-select id="drafting-team-select">
+            <template v-for="(team, index) in teams" :key="team.name">
+              <ukg-select-option :value="team.name" :label="team.name"
+                :selected="index === draftSettings.draftingTeamIndex"></ukg-select-option>
+            </template>
+          </ukg-select>
+        </ukg-input-container>
+
+      </ukg-list-item>
+
+    </ukg-list>
+  </ukg-modal>
   <ukg-data-table-container>
     <ukg-data-table>
       <ukg-toolbar slot="left" id="toolbar" :leftButtons="toolbarButtons"></ukg-toolbar>
@@ -83,11 +171,16 @@ const toolbarButtons = [
         <tbody>
           <template v-for="player in props.players" :key="player.PLAYER">
             <tr>
-              <td>
-                <ukg-checkbox-icon></ukg-checkbox-icon>
+              <td class="ukg-table-column-checkbox">
+                <ukg-button class="ukg-data-table-checkbox-button" icon-only parent-icon="person-add"
+                  v-if="draftSettings.mockDraft" @click="draftPlayer(player)"></ukg-button>
+                <ukg-button class="ukg-data-table-checkbox-button" role="checkbox" icon-only v-else>
+                  <ukg-checkbox-icon :data-player="`${player.PLAYER}`">
+                  </ukg-checkbox-icon>
+                </ukg-button>
               </td>
               <template v-for="col in props.cols" :key="player[col]">
-                <td>{{ player[col] }}</td>
+                <td class="data-cell">{{ player[col] }}</td>
               </template>
             </tr>
           </template>
@@ -98,6 +191,14 @@ const toolbarButtons = [
 </template>
 
 <style scoped>
+ukg-data-table {
+  --ukg-table-cells-align: center;
+}
+
+.data-cell {
+  white-space: nowrap;
+}
+
 .draft-grid {
   display: grid;
   grid-template-columns: repeat(24, 1fr);

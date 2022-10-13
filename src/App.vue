@@ -1,13 +1,11 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import DraftGrid from "./components/DraftGrid.vue";
 import TeamGrid from "./components/TeamGrid.vue";
 import { useTeams } from "./composables/useTeams.js";
 import { usePlayers } from "./composables/usePlayers.js";
-import { useDraftActions } from "./composables/useDraftActions.js";
 import { useTeamActions } from "./composables/useTeamActions.js";
 import { useDraft } from "./composables/useDraft.js";
-import { addEventListeners } from "./utils/helpers.js"
 
 const {
   teams,
@@ -16,18 +14,15 @@ const {
   deletePlayer,
 } = useTeams();
 
-const { draftSettings, changeSetting, updateActiveTeam, search } =
-  useDraftActions(teams);
+const search = ref("");
 
 const { fetchPlayerData, displayPlayers, sortedPlayersByAdp, cols } =
   usePlayers(teams, search);
 
-const { onDrafted } = useDraft(
+const { onDrafted, changeSetting, draftSettings } = useDraft(
   teams,
   setTeams,
-  draftSettings,
-  updateActiveTeam,
-  sortedPlayersByAdp
+  sortedPlayersByAdp,
 );
 
 const { resetTeams, teamView } = useTeamActions(
@@ -42,7 +37,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <ukg-nav-header heading="Fantasy Basketball Manager"></ukg-nav-header>
+  <ukg-nav-header heading="Fantasy Basketball Manager" :show-menu-button="false"></ukg-nav-header>
   <ukg-tab-bar-panel>
     <ukg-tab-bar>
       <ukg-tab identifier="draft" label="Draft board" is-active></ukg-tab>
