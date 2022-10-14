@@ -30,7 +30,6 @@ export const useDraft = (teams, setTeams, sortedPlayersByAdp) => {
         }
         // snake draft forward
         for (let i = 0; i < draftingTeamIndex; i++) {
-          console.log();
           draftPlayer(i, getNextPlayer());
         }
       } else {
@@ -48,7 +47,6 @@ export const useDraft = (teams, setTeams, sortedPlayersByAdp) => {
 
   const draftPlayer = (teamIndex, player) => {
     const team = teams.value[teamIndex];
-    console.log(team);
     const emptyPlayer = team?.players.find((p) => p.empty);
     if (emptyPlayer) {
       emptyPlayer.empty = false;

@@ -40,15 +40,15 @@ onMounted(() => {
   <ukg-nav-header heading="Fantasy Basketball Manager" :show-menu-button="false"></ukg-nav-header>
   <ukg-tab-bar-panel>
     <ukg-tab-bar>
-      <ukg-tab identifier="draft" label="Draft board" is-active></ukg-tab>
-      <ukg-tab identifier="team" label="Team board"></ukg-tab>
+      <ukg-tab identifier="players" label="Players" is-active></ukg-tab>
+      <ukg-tab identifier="teams" label="Teams"></ukg-tab>
     </ukg-tab-bar>
-    <div id="draft">
-      <DraftGrid id="draft" :changeSetting="changeSetting" :players="displayPlayers" :cols="cols"
-        @draftPlayer="onDrafted" :draftSettings="draftSettings" :teams="teams" @searchChanged="search = $event" />
+    <div id="players">
+      <DraftGrid :changeSetting="changeSetting" :players="displayPlayers" :cols="cols" @draftPlayer="onDrafted"
+        :draftSettings="draftSettings" :teams="teams" @searchChanged="search = $event" />
     </div>
-    <div id="team">
-      <TeamGrid id="team" :teams="teams" @deletePlayer="deletePlayer" :teamView="teamView" :resetTeams="resetTeams" />
+    <div id="teams">
+      <TeamGrid :teams="teams" @deletePlayer="deletePlayer" :teamView="teamView" :resetTeams="resetTeams" />
     </div>
   </ukg-tab-bar-panel>
 </template>

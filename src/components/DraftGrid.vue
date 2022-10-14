@@ -102,6 +102,13 @@ onMounted(() => {
       handler: (e) => {
         props.changeSetting("draftingTeam", e.target.value);
       },
+    },
+    {
+      selector: "ukg-nav-header#draft-settings-header",
+      event: "ukgNavCloseButtonSelected",
+      handler: () => {
+        document.querySelector("ukg-modal#settings-modal").dismiss();
+      },
     }
   ])
 })
@@ -130,7 +137,8 @@ onMounted(() => {
 
   </ukg-dialog>
   <ukg-modal id="settings-modal">
-    <ukg-nav-header is-overlay :show-menu-button="false" show-close-button heading="Draft settings"></ukg-nav-header>
+    <ukg-nav-header id="draft-settings-header" is-overlay :show-menu-button="false" show-close-button
+      heading="Draft settings"></ukg-nav-header>
     <ukg-list>
       <ukg-list-item>
         <p class="ukg-line-primary">Mock draft mode</p>
