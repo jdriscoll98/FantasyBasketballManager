@@ -52,7 +52,7 @@ const toolbarButtons = computed(() => {
   const buttons = [
     {
       icon: 'person-add',
-      label: "Draft",
+      label: "Add",
       emphasis: 'mid',
       clickHandler: () => {
         document.querySelector("ukg-dialog#draft-dialog").present();
@@ -60,7 +60,7 @@ const toolbarButtons = computed(() => {
     },
     {
       icon: 'settings',
-      label: "Settings",
+      label: " Settings",
       emphasis: 'mid',
       clickHandler: () => {
         document.querySelector("ukg-modal#settings-modal").present();
@@ -133,7 +133,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <ukg-dialog header-divider header="Draft players" id="draft-dialog" content-type="custom" with-button-group
+  <ukg-dialog header-divider header="Add players" id="draft-dialog" content-type="custom" with-button-group
     :ready-ok="selectedPlayers.length !== 0" :buttonsHandler="draftDialogButtonsHandler">
     <div style="width: 100%">
       <div v-if="selectedPlayers.length !== 0">
@@ -147,11 +147,8 @@ onMounted(() => {
       </div>
       <div v-else>
         <p style="text-align: center">No players selected</p>
-
       </div>
-
     </div>
-
   </ukg-dialog>
   <ukg-modal id="settings-modal">
     <ukg-nav-header id="draft-settings-header" is-overlay :show-menu-button="false" show-close-button
@@ -221,45 +218,5 @@ onMounted(() => {
 </template>
 
 <style scoped>
-ukg-data-table {
-  --ukg-table-cells-align: center;
-}
 
-
-.draft-grid {
-  display: grid;
-  grid-template-columns: repeat(24, 1fr);
-  grid-template-rows: repeat(20, min-content);
-  width: 100%;
-  height: calc(100vh - 8rem);
-  overflow: scroll;
-  max-width: 100vw;
-}
-
-@media (min-width: 600px) {
-  .draft-grid {
-    height: calc(100vh - 11rem);
-  }
-}
-
-.draft-header-cell {
-  background-color: #f1f1f1;
-  border: 1px solid #ddd;
-  text-align: center;
-  position: sticky;
-  top: 0;
-}
-
-.draft-cell {
-  border: 1px solid #ddd;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.draft-cell--selected {
-  background-color: #8bc6f783;
-  border: none;
-}
 </style>
