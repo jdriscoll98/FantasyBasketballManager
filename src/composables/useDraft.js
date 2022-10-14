@@ -2,7 +2,7 @@ import { computed, reactive } from "vue";
 
 export const useDraft = (teams, setTeams, sortedPlayersByAdp) => {
   const draftSettings = reactive({
-    mockDraft: true,
+    mockDraft: false,
     draftingTeamIndex: 0,
   });
 

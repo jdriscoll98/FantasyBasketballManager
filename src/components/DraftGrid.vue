@@ -73,6 +73,15 @@ const toolbarButtons = computed(() => {
   return buttons;
 })
 
+const draftDialogButtonsHandler = (button) => {
+  if (button === "Ok") {
+    selectedPlayers.value.forEach((player) => {
+      draftPlayer(player);
+    });
+    selectedPlayers.value = [];
+  }
+}
+
 onMounted(() => {
   addEventListeners([
     {
@@ -100,7 +109,8 @@ onMounted(() => {
       selector: "ukg-select#drafting-team-select",
       event: "ukgChange",
       handler: (e) => {
-        props.changeSetting("draftingTeam", e.target.value);
+        const index = props.teams.findIndex((team) => team.name === e.detail.value);
+        props.changeSetting("draftingTeamIndex", index);
       },
     },
     {
@@ -123,8 +133,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <ukg-dialog header-divider header="Draft players" id="draft-dialog" content-type="custom" with-button-group x
-    :ready-ok="selectedPlayers.length !== 0">
+  <ukg-dialog header-divider header="Draft players" id="draft-dialog" content-type="custom" with-button-group
+    :ready-ok="selectedPlayers.length !== 0" :buttonsHandler="draftDialogButtonsHandler">
     <div style="width: 100%">
       <div v-if="selectedPlayers.length !== 0">
         <ukg-list>
