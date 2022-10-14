@@ -109,6 +109,13 @@ onMounted(() => {
       handler: () => {
         document.querySelector("ukg-modal#settings-modal").dismiss();
       },
+    },
+    {
+      selector: "ukg-searchbar#player-search",
+      event: "ukgChange",
+      handler: (e) => {
+        emit('searchChanged', e.detail.value);
+      },
     }
   ])
 })
@@ -160,9 +167,10 @@ onMounted(() => {
     </ukg-list>
   </ukg-modal>
   <ukg-data-table-container>
-    <ukg-data-table>
+    <ukg-data-table :isEmpty="props.players.length === 0">
+
       <ukg-toolbar slot="left" id="toolbar" :leftButtons="toolbarButtons"></ukg-toolbar>
-      <ukg-searchbar aria-label="searchbar" slot="right" has-filter>
+      <ukg-searchbar aria-label="searchbar" slot="right" has-filter id="player-search">
         <ukg-button slot="filter" icon-only>
           <ukg-icon slot="icon-only" name="filter"></ukg-icon>
         </ukg-button>
@@ -188,13 +196,17 @@ onMounted(() => {
                 </ukg-button>
               </td>
               <template v-for="col in props.cols" :key="player[col]">
-                <td class="data-cell">{{ player[col] }}</td>
+                <td>{{ player[col] }}</td>
               </template>
             </tr>
           </template>
         </tbody>
       </table>
+      <div class="ukg-empty-message">
+        <p>No players found</p>
+      </div>
     </ukg-data-table>
+
   </ukg-data-table-container>
 </template>
 
@@ -203,9 +215,6 @@ ukg-data-table {
   --ukg-table-cells-align: center;
 }
 
-.data-cell {
-  white-space: nowrap;
-}
 
 .draft-grid {
   display: grid;

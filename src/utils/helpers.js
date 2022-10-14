@@ -8,6 +8,8 @@ export const addEventListeners = (actions) => {
         console.log("adding event listener", selector, event);
         element.addEventListener(event, handler);
         clearInterval(id);
+      } else {
+        console.log("Could not find element", selector);
       }
     }, 1000);
   });

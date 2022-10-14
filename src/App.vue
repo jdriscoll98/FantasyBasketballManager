@@ -37,56 +37,24 @@ onMounted(() => {
 </script>
 
 <template>
-  <ukg-nav-header heading="Fantasy Basketball Manager" :show-menu-button="false"></ukg-nav-header>
-  <ukg-tab-bar-panel>
-    <ukg-tab-bar>
-      <ukg-tab identifier="players" label="Players" is-active></ukg-tab>
-      <ukg-tab identifier="teams" label="Teams"></ukg-tab>
-    </ukg-tab-bar>
-    <div id="players">
-      <DraftGrid :changeSetting="changeSetting" :players="displayPlayers" :cols="cols" @draftPlayer="onDrafted"
-        :draftSettings="draftSettings" :teams="teams" @searchChanged="search = $event" />
-    </div>
-    <div id="teams">
-      <TeamGrid :teams="teams" @deletePlayer="deletePlayer" :teamView="teamView" :resetTeams="resetTeams" />
-    </div>
-  </ukg-tab-bar-panel>
+  <ukg-ignite-shell default-translation-path>
+    <ukg-nav-header heading="Fantasy Basketball Manager" :show-menu-button="false"></ukg-nav-header>
+    <ukg-tab-bar-panel>
+      <ukg-tab-bar>
+        <ukg-tab identifier="players" label="Players" is-active></ukg-tab>
+        <ukg-tab identifier="teams" label="Teams"></ukg-tab>
+      </ukg-tab-bar>
+      <div id="players">
+        <DraftGrid :changeSetting="changeSetting" :players="displayPlayers" :cols="cols" @draftPlayer="onDrafted"
+          :draftSettings="draftSettings" :teams="teams" @searchChanged="search = $event" />
+      </div>
+      <div id="teams">
+        <TeamGrid :teams="teams" @deletePlayer="deletePlayer" :teamView="teamView" :resetTeams="resetTeams" />
+      </div>
+    </ukg-tab-bar-panel>
+  </ukg-ignite-shell>
 </template>
 
 <style scoped>
-.tab-bar {
-  background-color: #f1f1f1;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-}
 
-
-.tab-panel {
-  display: grid;
-  grid-template-rows: 3rem auto 1fr;
-}
-
-.tab-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.app-heading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-size: .5rem;
-  max-width: 100vw;
-  min-height: 3rem;
-}
-
-@media screen and (min-width: 600px) {
-  .app-heading {
-    min-height: 3em;
-    font-size: 1rem;
-  }
-}
 </style>
