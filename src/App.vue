@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 import PlayerPanel from "./components/PlayerPanel.vue";
 import TeamPanel from "./components/TeamPanel.vue";
-import TradeList from "./components/TradeList.vue";
+import TradePanel from "./components/TradePanel.vue";
 import { useTeams } from "./composables/useTeams.js";
 import { usePlayers } from "./composables/usePlayers.js";
 import { useTeamActions } from "./composables/useTeamActions.js";
@@ -54,29 +54,12 @@ onMounted(() => {
         <TeamPanel :teams="teams" @deletePlayer="deletePlayer" :teamView="teamView" :resetTeams="resetTeams" />
       </div>
       <div id="trades">
-        <div class="trade-panel ukg_sys_color_surface_lightDarker_background">
-          <TradeList :teams="teams" />
-
-          <TradeList :teams="teams" />
-        </div>
+        <TradePanel :teams="teams" />
       </div>
     </ukg-tab-bar-panel>
   </ukg-ignite-shell>
 </template>
 
 <style scoped>
-.trade-panel {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-  height: 100%;
-  padding: 1rem 0;
-  flex-wrap: wrap;
-}
 
-.icon-section {
-  display: flex;
-  flex-direction: column;
-}
 </style>
