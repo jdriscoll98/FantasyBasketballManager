@@ -55,7 +55,10 @@ const toolbarButtons = computed(() => {
       label: "Add",
       emphasis: 'mid',
       clickHandler: () => {
-        document.querySelector("ukg-dialog#draft-dialog").present();
+        const dialog = document.querySelector('ukg-dialog#draft-dialog');
+        const draftingTeamName = props.teams[props.draftSettings.draftingTeamIndex].name;
+        dialog.header = `Add Player(s) to ${draftingTeamName}`;
+        dialog.present();
       },
     },
     {
@@ -106,6 +109,13 @@ onMounted(() => {
       },
     },
     {
+      selector: "ukg-switch#auto-increment-switch",
+      event: "ukgChange",
+      handler: (e) => {
+        props.changeSetting("autoIncrementOnSelection", e.target.checked);
+      },
+    },
+    {
       selector: "ukg-select#drafting-team-select",
       event: "ukgChange",
       handler: (e) => {
@@ -130,10 +140,11 @@ onMounted(() => {
   ])
 })
 
+
 </script>
 
 <template>
-  <ukg-dialog header-divider header="Add players" id="draft-dialog" content-type="custom" with-button-group
+  <ukg-dialog header-divider id="draft-dialog" content-type="custom" with-button-group
     :ready-ok="selectedPlayers.length !== 0" :buttonsHandler="draftDialogButtonsHandler">
     <div style="width: 100%">
       <div v-if="selectedPlayers.length !== 0">
@@ -152,14 +163,20 @@ onMounted(() => {
   </ukg-dialog>
   <ukg-modal id="settings-modal">
     <ukg-nav-header id="draft-settings-header" is-overlay :show-menu-button="false" show-close-button
-      heading="Draft settings"></ukg-nav-header>
+      heading="Settings"></ukg-nav-header>
     <ukg-list>
       <ukg-list-item>
         <p class="ukg-line-primary">Mock draft mode</p>
         <ukg-switch slot="right" id="mock-draft-switch" :checked="draftSettings.mockDraft"></ukg-switch>
       </ukg-list-item>
       <ukg-list-item>
-        <p class="ukg-line-primary">Drafting team</p>
+        <p class="ukg-line-primary">Auto increment on add</p>
+        <ukg-switch slot="right" id="auto-increment-switch"
+          :checked="draftSettings.autoIncrementOnSelection && !draftSettings.mockDraft">
+        </ukg-switch>
+      </ukg-list-item>
+      <ukg-list-item>
+        <p class="ukg-line-primary">Active team</p>
         <ukg-input-container slot="right">
           <ukg-select id="drafting-team-select">
             <template v-for="(team, index) in teams" :key="team.name">

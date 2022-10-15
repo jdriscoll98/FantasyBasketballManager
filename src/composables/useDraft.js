@@ -4,20 +4,18 @@ export const useDraft = (teams, setTeams, sortedPlayersByAdp) => {
   const draftSettings = reactive({
     mockDraft: false,
     draftingTeamIndex: 0,
+    autoIncrementOnSelection: true,
   });
 
   const changeSetting = (setting, value) => {
     draftSettings[setting] = value;
   };
   const draftRound = computed(() => {
-    if (draftSettings.mockDraft) {
-      const draftedPlayers = teams.value.reduce(
-        (acc, team) => acc + team.players.filter((p) => !p.empty).length,
-        0
-      );
-      return Math.floor(draftedPlayers - 1 / teams.value.length) + 1;
-    }
-    return 1;
+    const draftedPlayers = teams.value.reduce(
+      (acc, team) => acc + team.players.filter((p) => !p.empty).length,
+      0
+    );
+    return Math.floor((draftedPlayers - 1) / teams.value.length) + 1;
   });
   const onDrafted = (player) => {
     draftPlayer(draftSettings.draftingTeamIndex, player);
@@ -41,6 +39,20 @@ export const useDraft = (teams, setTeams, sortedPlayersByAdp) => {
         for (let i = teams.value.length - 1; i > draftingTeamIndex; i--) {
           draftPlayer(i, getNextPlayer());
         }
+      }
+    } else if (draftSettings.autoIncrementOnSelection) {
+      if (draftRound.value % 2 === 0) {
+        if (draftSettings.draftingTeamIndex === 0) {
+          return;
+        }
+        // snake draft backward
+        draftSettings.draftingTeamIndex = draftSettings.draftingTeamIndex - 1;
+      } else {
+        if (draftSettings.draftingTeamIndex === teams.value.length - 1) {
+          return;
+        }
+        // snake draft forward
+        draftSettings.draftingTeamIndex = draftSettings.draftingTeamIndex + 1;
       }
     }
   };
