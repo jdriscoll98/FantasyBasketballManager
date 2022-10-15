@@ -45,9 +45,9 @@ onMounted(() => {
     <ukg-nav-header heading="Fantasy Basketball Manager" :show-menu-button="false"></ukg-nav-header>
     <ukg-tab-bar-panel>
       <ukg-tab-bar>
-        <ukg-tab identifier="players" label="Players"></ukg-tab>
+        <ukg-tab identifier="players" label="Players" is-active></ukg-tab>
         <ukg-tab identifier="teams" label="Teams"></ukg-tab>
-        <ukg-tab identifier="trades" label="Trade" is-active></ukg-tab>
+        <ukg-tab identifier="trades" label="Trade"></ukg-tab>
       </ukg-tab-bar>
       <div id="players">
         <PlayerPanel :changeSetting="changeSetting" :players="displayPlayers" :cols="cols" @draftPlayer="onDrafted"

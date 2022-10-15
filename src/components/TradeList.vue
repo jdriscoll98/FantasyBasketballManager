@@ -1,6 +1,6 @@
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { addEventListeners } from "../utils/helpers";
 
 const props = defineProps({
@@ -16,11 +16,15 @@ const props = defineProps({
         type: Array,
         required: true,
     },
+    selectedPlayers: {
+        type: Array,
+        required: true,
+    }
 })
+
 
 const emit = defineEmits(["playersUpdated", "teamsUpdated"]);
 
-const selectedPlayers = ref([]);
 
 const selectedTeamIndex = ref(props.isTeamA ? 0 : 1);
 
@@ -30,9 +34,9 @@ const addPlayer = () => {
         event: 'ukgChange',
         handler: (e) => {
             const player = props.teams[selectedTeamIndex.value].players.find((p) => p.PLAYER === e.detail.value);
-            const index = selectedPlayers.value.findIndex(p => p.empty);
+            const index = props.selectedPlayers.findIndex(p => p.empty);
             if (index > -1) {
-                selectedPlayers.value[index] = player;
+                props.selectedPlayers[index] = player;
             }
         },
     }])
@@ -42,8 +46,8 @@ const addPlayer = () => {
         EV: "0",
         empty: true,
     }
-    selectedPlayers.value.push(emptyPlayer)
-    emit("playersUpdated", props.isTeamA, selectedPlayers.value);
+    props.selectedPlayers.push(emptyPlayer)
+    emit("playersUpdated", props.isTeamA, props.selectedPlayers);
 }
 
 const getPos = (position) => {
@@ -51,7 +55,7 @@ const getPos = (position) => {
 }
 
 const getResult = () => {
-    const leavingPlayersTotal = selectedPlayers.value.reduce((acc, player) => {
+    const leavingPlayersTotal = props.selectedPlayers.reduce((acc, player) => {
         return !player.empty ? acc + Number(player.TOTAL) : acc;
     }, 0);
     const receivingPlayersTotal = props.receivingPlayers.reduce((acc, player) => {
@@ -63,16 +67,15 @@ const getResult = () => {
 }
 
 const removePlayer = (player) => {
-    const index = selectedPlayers.value.indexOf(player);
+    const index = props.selectedPlayers.indexOf(player);
     if (index > -1) {
-        selectedPlayers.value.splice(index, 1);
+        props.selectedPlayers.splice(index, 1);
     }
-    emit("playersUpdated", props.isTeamA, selectedPlayers.value);
+    emit("playersUpdated", props.isTeamA, props.selectedPlayers);
 }
 
-const resetPlayers = () => {
-    selectedPlayers.value = [];
-    emit("playersUpdated", props.isTeamA, selectedPlayers.value);
+const getPlayers = () => {
+    return props.teams[selectedTeamIndex.value].players.filter((p) => !p.empty && !props.selectedPlayers.includes(p));
 }
 
 onMounted(() => {
@@ -82,6 +85,8 @@ onMounted(() => {
         handler: (e) => {
             const teamIndex = props.teams.findIndex((t) => t.name === e.detail.value);
             selectedTeamIndex.value = teamIndex;
+            props.selectedPlayers = [];
+            emit("playersUpdated", props.isTeamA, []);
             emit('teamsUpdated', props.isTeamA, teamIndex);
         },
     },
@@ -103,7 +108,7 @@ onMounted(() => {
         </ukg-input-container>
         <ukg-card non-actionable>
             <ukg-list>
-                <template v-for="player in selectedPlayers" :key="player.PLAYER">
+                <template v-for="player in props.selectedPlayers" :key="player.PLAYER">
                     <ukg-list-item v-if="!player.empty" has-divider>
                         <ukg-avatar slot='left' :initials="getPos(player.POS)"></ukg-avatar>
                         <p class="ukg-line-primary">{{ player.PLAYER }}</p>
@@ -115,7 +120,7 @@ onMounted(() => {
                         <ukg-input-container>
                             <ukg-label>Player</ukg-label>
                             <ukg-select :id="`player-select-${isTeamA ? 'A' : 'B'}`">
-                                <template v-for="player in props.teams[selectedTeamIndex].players">
+                                <template v-for="player in getPlayers()">
                                     <ukg-select-option :label="player.PLAYER" :value="player.PLAYER">
                                     </ukg-select-option>
                                 </template>

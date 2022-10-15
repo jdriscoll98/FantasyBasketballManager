@@ -59,11 +59,11 @@ const executeTrade = () => {
 <template>
     <ukg-toolbar></ukg-toolbar>
     <div class="trade-panel">
-        <TradeList @players-updated="updatePlayers" @teams-updated="updateTeams"
+        <TradeList @players-updated="updatePlayers" @teams-updated="updateTeams" :selectedPlayers="teamASelectedPlayers"
             :receivingPlayers="teamBSelectedPlayers" :teams="teams" is-team-a />
         <ukg-button @click="executeTrade">Execute trade</ukg-button>
         <TradeList @players-updated="updatePlayers" @teams-updated="updateTeams"
-            :receivingPlayers="teamASelectedPlayers" :teams="teams" />
+            :receivingPlayers="teamASelectedPlayers" :selectedPlayers="teamBSelectedPlayers" :teams="teams" />
     </div>
 </template>
 
