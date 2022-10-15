@@ -1,6 +1,6 @@
 <script setup>
 import { POSITION_ORDER } from "../utils/constants";
-import { onMounted, onRenderTracked, ref, watch } from "vue";
+import { ref } from "vue";
 const props = defineProps({
     team: {
         type: Object,

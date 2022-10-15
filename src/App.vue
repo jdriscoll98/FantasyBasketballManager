@@ -7,6 +7,7 @@ import { useTeams } from "./composables/useTeams.js";
 import { usePlayers } from "./composables/usePlayers.js";
 import { useTeamActions } from "./composables/useTeamActions.js";
 import { useDraft } from "./composables/useDraft.js";
+import { useTrades } from "./composables/useTrades.js";
 
 const {
   teams,
@@ -29,6 +30,8 @@ const { onDrafted, changeSetting, draftSettings } = useDraft(
 const { resetTeams, teamView } = useTeamActions(
   teams,
 );
+
+const { executeTrade } = useTrades(teams, setTeams);
 
 onMounted(() => {
   fetchPlayerData();
@@ -54,7 +57,7 @@ onMounted(() => {
         <TeamPanel :teams="teams" @deletePlayer="deletePlayer" :teamView="teamView" :resetTeams="resetTeams" />
       </div>
       <div id="trades">
-        <TradePanel :teams="teams" />
+        <TradePanel :teams="teams" @execute-trade="executeTrade" />
       </div>
     </ukg-tab-bar-panel>
   </ukg-ignite-shell>

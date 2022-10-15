@@ -11,12 +11,18 @@ const props = defineProps({
     isTeamA: {
         type: Boolean,
         required: true,
-    }
+    },
+    receivingPlayers: {
+        type: Array,
+        required: true,
+    },
 })
+
+const emit = defineEmits(["playersUpdated", "teamsUpdated"]);
 
 const selectedPlayers = ref([]);
 
-const selectedTeamIndex = ref(0);
+const selectedTeamIndex = ref(props.isTeamA ? 0 : 1);
 
 const addPlayer = () => {
     addEventListeners([{
@@ -37,10 +43,36 @@ const addPlayer = () => {
         empty: true,
     }
     selectedPlayers.value.push(emptyPlayer)
+    emit("playersUpdated", props.isTeamA, selectedPlayers.value);
 }
 
 const getPos = (position) => {
     return position ? position.replaceAll('"', '').split(" ")[0] : "BN";
+}
+
+const getResult = () => {
+    const leavingPlayersTotal = selectedPlayers.value.reduce((acc, player) => {
+        return !player.empty ? acc + Number(player.TOTAL) : acc;
+    }, 0);
+    const receivingPlayersTotal = props.receivingPlayers.reduce((acc, player) => {
+        return !player.empty ? acc + Number(player.TOTAL) : acc;
+    }, 0);
+    // round to the nearest hundreds place
+    const result = Math.trunc((receivingPlayersTotal - leavingPlayersTotal) * 1000) / 1000;
+    return result;
+}
+
+const removePlayer = (player) => {
+    const index = selectedPlayers.value.indexOf(player);
+    if (index > -1) {
+        selectedPlayers.value.splice(index, 1);
+    }
+    emit("playersUpdated", props.isTeamA, selectedPlayers.value);
+}
+
+const resetPlayers = () => {
+    selectedPlayers.value = [];
+    emit("playersUpdated", props.isTeamA, selectedPlayers.value);
 }
 
 onMounted(() => {
@@ -48,7 +80,9 @@ onMounted(() => {
         selector: `ukg-select#team-select-${props.isTeamA ? 'A' : 'B'}`,
         event: 'ukgChange',
         handler: (e) => {
-            selectedTeamIndex.value = e.detail.value;
+            const teamIndex = props.teams.findIndex((t) => t.name === e.detail.value);
+            selectedTeamIndex.value = teamIndex;
+            emit('teamsUpdated', props.isTeamA, teamIndex);
         },
     },
     ])
@@ -61,7 +95,7 @@ onMounted(() => {
         <ukg-input-container>
             <ukg-label>Team</ukg-label>
             <ukg-select :id="`team-select-${isTeamA ? 'A' : 'B'}`">
-                <template v-for="(team, index) in props.teams">
+                <template v-for="(team, index) in props.teams" :key="team.name">
                     <ukg-select-option :label="team.name" :value="team.name" :selected="index === selectedTeamIndex">
                     </ukg-select-option>
                 </template>
@@ -69,12 +103,13 @@ onMounted(() => {
         </ukg-input-container>
         <ukg-card non-actionable>
             <ukg-list>
-                <template v-for="player in selectedPlayers">
-                    <ukg-list-item v-if="!player.empty">
+                <template v-for="player in selectedPlayers" :key="player.PLAYER">
+                    <ukg-list-item v-if="!player.empty" has-divider>
                         <ukg-avatar slot='left' :initials="getPos(player.POS)"></ukg-avatar>
                         <p class="ukg-line-primary">{{ player.PLAYER }}</p>
                         <p class="ukg-line-secondary">EV: {{ player.TOTAL}}</p>
-                        <ukg-button icon-only slot="right" parent-icon="delete"></ukg-button>
+                        <ukg-button icon-only slot="right" parent-icon="delete" @click="removePlayer(player)">
+                        </ukg-button>
                     </ukg-list-item>
                     <div v-else class="empty-player">
                         <ukg-input-container>
@@ -87,13 +122,20 @@ onMounted(() => {
                             </ukg-select>
                         </ukg-input-container>
                     </div>
-                </template>
 
+                </template>
+                <!-- conditional to change a class , hack since i can't use :class on custom components until i get vue bindings -->
+                <ukg-list-item class="positive" v-if="getResult() > 0">
+                    <p class="ukg-line-primary result-line">Result: {{ getResult() }}</p>
+                </ukg-list-item>
+                <ukg-list-item class="negative" v-if="getResult() < 0">
+                    <p class="ukg-line-primary result-line">Result: {{ getResult() }}</p>
+                </ukg-list-item>
             </ukg-list>
             <div class="add-player-section">
                 <ukg-button emphasis="low" parent-icon="add-circle-filled" @click="addPlayer">Add player</ukg-button>
                 <ukg-divider :has-margin="false" bg="light"></ukg-divider>
-                <ukg-button parent-icon="generate" emphasis="low">Find a trade</ukg-button>
+                <ukg-button disabled parent-icon="generate" emphasis="low">Find a trade</ukg-button>
             </div>
         </ukg-card>
     </div>
@@ -111,6 +153,19 @@ onMounted(() => {
 }
 
 .empty-player {
-    padding: .5rem;
+    padding: .5rem .5rem 0 .5rem;
+}
+
+.result-line {
+    text-align: center;
+    color: white !important;
+}
+
+.positive {
+    background-color: var(--ukg_sys_color_success);
+}
+
+.negative {
+    background-color: var(--ukg_sys_color_important);
 }
 </style>
