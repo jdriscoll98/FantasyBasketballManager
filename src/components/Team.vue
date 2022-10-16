@@ -53,7 +53,10 @@ const getPlayers = (team) => {
         });
         const remainingPlayers = [...team.players.filter((p) => !p.empty)];
         POSITION_ORDER.forEach((pos, index) => {
-            const player = remainingPlayers.find((player) => player.Position?.includes(pos));
+            const player = remainingPlayers.find((player) => {
+                console.log(player)
+                return player.FantasyPositions?.includes(pos)
+            });
             if (player) {
                 players[index] = player;
                 remainingPlayers.splice(remainingPlayers.indexOf(player), 1);

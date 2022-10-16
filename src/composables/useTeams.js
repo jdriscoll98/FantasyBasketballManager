@@ -16,7 +16,7 @@ export const useTeams = () => {
             .fill(0)
             .map((_, i) => {
               return {
-                PLAYER: `Player ${i + 1}`,
+                Name: `Player ${i + 1}`,
                 empty: true,
               };
             });

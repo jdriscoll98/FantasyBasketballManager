@@ -59,6 +59,7 @@ export const usePlayers = (teams, search) => {
           // calculate total
           player.Total = getTotal(player);
           players.push(player);
+          console.log(player);
         }
         cols.push("Total");
         allPlayers.value = players;

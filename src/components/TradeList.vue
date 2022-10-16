@@ -140,7 +140,7 @@ onMounted(() => {
             <div class="add-player-section">
                 <ukg-button emphasis="low" parent-icon="add-circle-filled" @click="addPlayer">Add player</ukg-button>
                 <ukg-divider :has-margin="false" bg="light"></ukg-divider>
-                <ukg-button disabled parent-icon="generate" emphasis="low">Find a trade</ukg-button>
+                <ukg-button parent-icon="generate" emphasis="low" @click="findATrade">Find a trade</ukg-button>
             </div>
         </ukg-card>
     </div>
