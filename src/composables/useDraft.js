@@ -1,6 +1,6 @@
 import { computed, reactive } from "vue";
 
-export const useDraft = (teams, setTeams, sortedPlayersByAdp) => {
+export const useDraft = (teams, setTeams, sortedPlayersByTotal) => {
   const draftSettings = reactive({
     mockDraft: false,
     draftingTeamIndex: 0,
@@ -63,12 +63,14 @@ export const useDraft = (teams, setTeams, sortedPlayersByAdp) => {
     if (emptyPlayer) {
       emptyPlayer.empty = false;
       Object.assign(emptyPlayer, player);
+    } else {
+      console.log("No empty player found");
     }
     setTeams([...teams.value]);
   };
 
   const getNextPlayer = () => {
-    return sortedPlayersByAdp.value[0];
+    return sortedPlayersByTotal.value[0];
   };
 
   return {

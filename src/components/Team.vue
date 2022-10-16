@@ -19,16 +19,16 @@ const getTeamEv = (team) => {
     // sum up each players total value
     return Math.round(
         team?.players.reduce((acc, player) => {
-            return !player.empty ? acc + Number(player.TOTAL) : acc;
+            return !player.empty ? acc + Number(player.Total) : acc;
         }, 0)
     );
 };
 
 const deleteSelectedPlayer = () => {
-    const index = props.team.players.findIndex((p) => p.PLAYER === selectedPlayer.value.PLAYER);
+    const index = props.team.players.findIndex((p) => p.Name === selectedPlayer.value.Name);
     console.log(index);
     if (index > -1) {
-        props.team.players[index] = { empty: true, position: "BN", PLAYER: `Player ${index + 1}` };
+        props.team.players[index] = { empty: true, position: "BN", Name: `Player ${index + 1}` };
         emit("deletePlayer", props.team, selectedPlayer);
     }
 }
@@ -49,11 +49,11 @@ const getPlayers = (team) => {
     }
     else {
         const players = Array(13).fill(0).map((_, i) => {
-            return { empty: true, position: POSITION_ORDER[i], PLAYER: `Player ${i + 1}` };
+            return { empty: true, position: POSITION_ORDER[i], Name: `Player ${i + 1}` };
         });
         const remainingPlayers = [...team.players.filter((p) => !p.empty)];
         POSITION_ORDER.forEach((pos, index) => {
-            const player = remainingPlayers.find((player) => player.POS?.includes(pos));
+            const player = remainingPlayers.find((player) => player.Position?.includes(pos));
             if (player) {
                 players[index] = player;
                 remainingPlayers.splice(remainingPlayers.indexOf(player), 1);
@@ -101,11 +101,11 @@ const getColor = (pos) => {
             </ukg-list-section>
             <template v-for="(player, index) of getPlayers(props.team)">
                 <ukg-list-item has-divider>
-                    <ukg-avatar slot="left" :initials="getPosition(player.POS, index)"
-                        :color="getColor(getPosition(player.POS, index))">
+                    <ukg-avatar slot="left" :initials="getPosition(player.Position, index)"
+                        :color="getColor(getPosition(player.Position, index))">
                     </ukg-avatar>
-                    <p class="ukg-line-primary" :style="{'white-space': 'nowrap'}">{{ player.PLAYER }}</p>
-                    <p class="ukg-line-secondary">EV: {{ player.TOTAL }}</p>
+                    <p class="ukg-line-primary" :style="{'white-space': 'nowrap'}">{{ player.Name }}</p>
+                    <p class="ukg-line-secondary">EV: {{ player.Total }}</p>
                     <ukg-button slot="right" icon-only parent-icon="menu-overflow" @click="presentMenu($event, player)">
                     </ukg-button>
                 </ukg-list-item>

@@ -33,7 +33,7 @@ const addPlayer = () => {
         selector: `ukg-select#player-select-${props.isTeamA ? 'A' : 'B'}`,
         event: 'ukgChange',
         handler: (e) => {
-            const player = props.teams[selectedTeamIndex.value].players.find((p) => p.PLAYER === e.detail.value);
+            const player = props.teams[selectedTeamIndex.value].players.find((p) => p.Name === e.detail.value);
             const index = props.selectedPlayers.findIndex(p => p.empty);
             if (index > -1) {
                 props.selectedPlayers[index] = player;
@@ -41,9 +41,9 @@ const addPlayer = () => {
         },
     }])
     const emptyPlayer = {
-        PLAYER: "Player",
-        POS: "NA",
-        EV: "0",
+        Name: "Player",
+        Position: "NA",
+        Total: "0",
         empty: true,
     }
     props.selectedPlayers.push(emptyPlayer)
@@ -56,10 +56,10 @@ const getPos = (position) => {
 
 const getResult = () => {
     const leavingPlayersTotal = props.selectedPlayers.reduce((acc, player) => {
-        return !player.empty ? acc + Number(player.TOTAL) : acc;
+        return !player.empty ? acc + Number(player.Total) : acc;
     }, 0);
     const receivingPlayersTotal = props.receivingPlayers.reduce((acc, player) => {
-        return !player.empty ? acc + Number(player.TOTAL) : acc;
+        return !player.empty ? acc + Number(player.Total) : acc;
     }, 0);
     // round to the nearest hundreds place
     const result = Math.trunc((receivingPlayersTotal - leavingPlayersTotal) * 1000) / 1000;
@@ -108,11 +108,11 @@ onMounted(() => {
         </ukg-input-container>
         <ukg-card non-actionable>
             <ukg-list>
-                <template v-for="player in props.selectedPlayers" :key="player.PLAYER">
+                <template v-for="player in props.selectedPlayers" :key="player.Name">
                     <ukg-list-item v-if="!player.empty" has-divider>
-                        <ukg-avatar slot='left' :initials="getPos(player.POS)"></ukg-avatar>
-                        <p class="ukg-line-primary">{{ player.PLAYER }}</p>
-                        <p class="ukg-line-secondary">EV: {{ player.TOTAL}}</p>
+                        <ukg-avatar slot='left' :initials="getPos(player.Position)"></ukg-avatar>
+                        <p class="ukg-line-primary">{{ player.Name }}</p>
+                        <p class="ukg-line-secondary">EV: {{ player.Total}}</p>
                         <ukg-button icon-only slot="right" parent-icon="delete" @click="removePlayer(player)">
                         </ukg-button>
                     </ukg-list-item>
@@ -121,7 +121,7 @@ onMounted(() => {
                             <ukg-label>Player</ukg-label>
                             <ukg-select :id="`player-select-${isTeamA ? 'A' : 'B'}`">
                                 <template v-for="player in getPlayers()">
-                                    <ukg-select-option :label="player.PLAYER" :value="player.PLAYER">
+                                    <ukg-select-option :label="player.Name" :value="player.Name">
                                     </ukg-select-option>
                                 </template>
                             </ukg-select>

@@ -34,10 +34,10 @@ const isColumnSticky = (col) => {
   if (window.innerWidth < 600) {
     return false;
   }
-  if (col === "PLAYER" || col === "ADP") {
+  if (col === "Name") {
     return "left";
   }
-  else if (col === "TOTAL") {
+  else if (col === "Total") {
     return "right";
   }
   else {
@@ -92,9 +92,9 @@ onMounted(() => {
       event: "ukgCheckboxChanged",
       handler: (e) => {
         const playerName = e.target.getAttribute("data-player");
-        const player = props.players.find((p) => p.PLAYER === playerName);
+        const player = props.players.find((p) => p.Name === playerName);
         if (selectedPlayers.value.includes(player)) {
-          selectedPlayers.value = selectedPlayers.value.filter((p) => p.PLAYER !== player.PLAYER);
+          selectedPlayers.value = selectedPlayers.value.filter((p) => p.Name !== player.Name);
         }
         else {
           selectedPlayers.value = [...selectedPlayers.value, player];
@@ -149,9 +149,9 @@ onMounted(() => {
     <div style="width: 100%">
       <div v-if="selectedPlayers.length !== 0">
         <ukg-list>
-          <template v-for="player in selectedPlayers" :key="player.PLAYER">
+          <template v-for="player in selectedPlayers" :key="player.Name">
             <ukg-list-item has-divider>
-              <p class="ukg-line-primary">{{ player.PLAYER }}</p>
+              <p class="ukg-line-primary">{{ player.Name }}</p>
             </ukg-list-item>
           </template>
         </ukg-list>
@@ -209,13 +209,13 @@ onMounted(() => {
           </tr>
         </thead>
         <tbody>
-          <template v-for="player in props.players" :key="player.PLAYER">
+          <template v-for="player in props.players" :key="player.Name">
             <tr>
               <td class="ukg-table-column-checkbox">
                 <ukg-button class="ukg-data-table-checkbox-button" icon-only parent-icon="person-add"
                   v-if="draftSettings.mockDraft" @click="draftPlayer(player)"></ukg-button>
                 <ukg-button class="ukg-data-table-checkbox-button" role="checkbox" icon-only v-else>
-                  <ukg-checkbox-icon :data-player="`${player.PLAYER}`">
+                  <ukg-checkbox-icon :data-player="`${player.Name}`">
                   </ukg-checkbox-icon>
                 </ukg-button>
               </td>

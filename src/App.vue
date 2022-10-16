@@ -18,13 +18,13 @@ const {
 
 const search = ref("");
 
-const { fetchPlayerData, displayPlayers, sortedPlayersByAdp, cols } =
+const { fetchPlayerData, displayPlayers, sortedPlayersByTotal, cols } =
   usePlayers(teams, search);
 
 const { onDrafted, changeSetting, draftSettings } = useDraft(
   teams,
   setTeams,
-  sortedPlayersByAdp,
+  sortedPlayersByTotal,
 );
 
 const { resetTeams, teamView } = useTeamActions(

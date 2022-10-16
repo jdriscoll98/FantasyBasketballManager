@@ -8,20 +8,16 @@ export const usePlayers = (teams, search) => {
       .filter((player) => {
         return (
           search.value === "" ||
-          player.PLAYER.toLowerCase().includes(search.value.toLowerCase())
+          player.Name.toLowerCase().includes(search.value.toLowerCase())
         );
       })
       .sort((a, b) => {
         // sort by 50% total and 50% adp
-        const aTotal = Number(a.TOTAL);
-        const bTotal = Number(b.TOTAL);
-        const aAdp = Number(a.ADP || 1000);
-        const bAdp = Number(b.ADP || 1000);
-        if (Math.abs(aTotal - bTotal) < 0.05 * aTotal) {
-          return aAdp - bAdp;
-        }
+        const aTotal = Number(a.Total);
+        const bTotal = Number(b.Total);
         return bTotal - aTotal;
-      });
+      })
+      .slice(0, 200);
   });
 
   const availablePlayers = computed(() => {
@@ -29,7 +25,7 @@ export const usePlayers = (teams, search) => {
       let drafted = false;
       teams.value.forEach((team) => {
         return team.players.forEach((p) => {
-          if (p.PLAYER === player.PLAYER) {
+          if (p.Name === player.Name) {
             drafted = true;
           }
         });
@@ -38,11 +34,11 @@ export const usePlayers = (teams, search) => {
     });
   });
 
-  const sortedPlayersByAdp = computed(() => {
+  const sortedPlayersByTotal = computed(() => {
     return [...availablePlayers.value].sort((a, b) => {
-      const player1 = a.ADP === "" ? 1000 : Number(a.ADP);
-      const player2 = b.ADP === "" ? 1000 : Number(b.ADP);
-      return player1 - player2;
+      const aTotal = Number(a.Total);
+      const bTotal = Number(b.Total);
+      return bTotal - aTotal;
     });
   });
 
@@ -55,16 +51,34 @@ export const usePlayers = (teams, search) => {
         const players = [];
         for (let i = 1; i < lines.length; i++) {
           const player = {};
-          const line = lines[i].replace(/(".*),(.*")/gm, "$1 $2");
+          const line = lines[i];
           const currentline = line.split(",");
           for (let j = 0; j < cols.length; j++) {
-            player[cols[j].trim()] = currentline[j].trim();
+            player[cols[j]] = currentline[j];
           }
+          // calculate total
+          player.Total = getTotal(player);
           players.push(player);
         }
+        cols.push("Total");
         allPlayers.value = players;
       });
   }
+
+  const getTotal = (player) => {
+    const total =
+      1 * Number(player.Points) +
+      1 * Number(player.Rebounds) +
+      2 * Number(player.Assists) +
+      4 * Number(player.Steals) +
+      4 * Number(player.Blocks) -
+      2 * Number(player.TO) +
+      2 * Number(player.FGM) -
+      1 * Number(player.FGA) +
+      1 * Number(player.FTM) -
+      1 * Number(player.FTA);
+    return Math.round(total);
+  };
 
   const cols = computed(() => {
     return allPlayers.value.length > 0 ? Object.keys(allPlayers.value[0]) : [];
@@ -74,7 +88,7 @@ export const usePlayers = (teams, search) => {
     allPlayers,
     displayPlayers,
     fetchPlayerData,
-    sortedPlayersByAdp,
+    sortedPlayersByTotal,
     cols,
   };
 };
