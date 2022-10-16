@@ -11,7 +11,6 @@ const csvWriter = createCsvWriter({
     { id: "Name", title: "Name" },
     { id: "Team", title: "Team" },
     { id: "Position", title: "Position" },
-    { id: "FantasyPositions", title: "FantasyPositions" },
     { id: "Games", title: "Games" },
     { id: "FieldGoalsMade", title: "FGM" },
     { id: "FieldGoalsAttempted", title: "FGA" },
@@ -30,7 +29,6 @@ const records = data.map((player) => {
   const {
     Name,
     Team,
-    Position,
     Games,
     FieldGoalsMade,
     FieldGoalsAttempted,
@@ -49,8 +47,7 @@ const records = data.map((player) => {
   return {
     Name,
     Team,
-    Position,
-    FantasyPositions: fantasy_positions.join(" "),
+    Position: fantasy_positions.join(" "),
     Games,
     FieldGoalsMade,
     FieldGoalsAttempted,

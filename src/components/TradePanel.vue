@@ -11,8 +11,8 @@ const props = defineProps({
 
 const emit = defineEmits(["executeTrade"]);
 
-const teamAIndex = ref(0);
-const teamBIndex = ref(1);
+const teamAIndex = ref(null);
+const teamBIndex = ref(null);
 
 const teamASelectedPlayers = ref([]);
 const teamBSelectedPlayers = ref([]);
@@ -36,6 +36,9 @@ const updateTeams = (isTeamA, teamIndex) => {
 }
 
 const executeTrade = () => {
+    if (teamASelectedPlayers.value.length !== teamBSelectedPlayers.value.length) {
+        return;
+    }
     const tradePayload = {
         teamAData: {
             index: teamAIndex.value,
@@ -52,6 +55,20 @@ const executeTrade = () => {
 
 }
 
+const onFindTrade = () => {
+    const tradePayload = {
+        teamAData: {
+            index: teamAIndex.value,
+            players: teamASelectedPlayers.value,
+        },
+        teamBData: {
+            index: teamBIndex.value,
+            players: teamBSelectedPlayers.value,
+        }
+    }
+    emit("findTrade", tradePayload);
+}
+
 
 
 </script>
@@ -59,11 +76,13 @@ const executeTrade = () => {
 <template>
     <ukg-toolbar></ukg-toolbar>
     <div class="trade-panel">
-        <TradeList @players-updated="updatePlayers" @teams-updated="updateTeams" :selectedPlayers="teamASelectedPlayers"
+        <TradeList @find-trade="onFindTrade" @players-updated="updatePlayers" @teams-updated="updateTeams"
+            :selectedTeamIndex="teamAIndex" :selectedPlayers="teamASelectedPlayers"
             :receivingPlayers="teamBSelectedPlayers" :teams="teams" is-team-a />
         <ukg-button @click="executeTrade">Execute trade</ukg-button>
-        <TradeList @players-updated="updatePlayers" @teams-updated="updateTeams"
-            :receivingPlayers="teamASelectedPlayers" :selectedPlayers="teamBSelectedPlayers" :teams="teams" />
+        <TradeList @find-trade="onFindTrade" @players-updated="updatePlayers" @teams-updated="updateTeams"
+            :selectedTeamIndex="teamBIndex" :receivingPlayers="teamASelectedPlayers"
+            :selectedPlayers="teamBSelectedPlayers" :teams="teams" />
     </div>
 </template>
 

@@ -1,6 +1,6 @@
 export const useTrades = (teams, setTeams) => {
-  const executeTrade = (trade) => {
-    const { teamAData, teamBData } = trade;
+  const executeTrade = (tradePayload) => {
+    const { teamAData, teamBData } = tradePayload;
     const teamA = teams.value[teamAData.index];
     const teamB = teams.value[teamBData.index];
     const teamAPlayers = teamAData.players;
@@ -21,7 +21,12 @@ export const useTrades = (teams, setTeams) => {
     setTeams([...teams.value]);
   };
 
+  const findTrade = (tradePayload) => {
+    //  To be implemented
+  };
+
   return {
     executeTrade,
+    findTrade,
   };
 };

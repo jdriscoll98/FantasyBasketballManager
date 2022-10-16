@@ -26,7 +26,6 @@ const getTeamEv = (team) => {
 
 const deleteSelectedPlayer = () => {
     const index = props.team.players.findIndex((p) => p.Name === selectedPlayer.value.Name);
-    console.log(index);
     if (index > -1) {
         props.team.players[index] = { empty: true, position: "BN", Name: `Player ${index + 1}` };
         emit("deletePlayer", props.team, selectedPlayer);
@@ -49,13 +48,12 @@ const getPlayers = (team) => {
     }
     else {
         const players = Array(13).fill(0).map((_, i) => {
-            return { empty: true, position: POSITION_ORDER[i], Name: `Player ${i + 1}` };
+            return { empty: true, Position: POSITION_ORDER[i], Name: `Player ${i + 1}` };
         });
         const remainingPlayers = [...team.players.filter((p) => !p.empty)];
         POSITION_ORDER.forEach((pos, index) => {
             const player = remainingPlayers.find((player) => {
-                console.log(player)
-                return player.FantasyPositions?.includes(pos)
+                return player.Position?.includes(pos)
             });
             if (player) {
                 players[index] = player;
@@ -63,7 +61,7 @@ const getPlayers = (team) => {
             }
         })
         remainingPlayers.forEach((player) => {
-            const emptyIndex = players.findIndex((p) => p.empty && p.position === "BN");
+            const emptyIndex = players.findIndex((p) => p.empty && p.Position === "BN");
             players[emptyIndex] = player;
         })
         return players;

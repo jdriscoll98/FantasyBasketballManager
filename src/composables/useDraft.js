@@ -63,8 +63,6 @@ export const useDraft = (teams, setTeams, sortedPlayersByTotal) => {
     if (emptyPlayer) {
       emptyPlayer.empty = false;
       Object.assign(emptyPlayer, player);
-    } else {
-      console.log("No empty player found");
     }
     setTeams([...teams.value]);
   };

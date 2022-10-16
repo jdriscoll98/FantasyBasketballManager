@@ -194,10 +194,7 @@ onMounted(() => {
     <ukg-data-table :isEmpty="props.players.length === 0">
 
       <ukg-toolbar slot="left" id="toolbar" :leftButtons="toolbarButtons"></ukg-toolbar>
-      <ukg-searchbar aria-label="searchbar" slot="right" has-filter id="player-search">
-        <ukg-button slot="filter" icon-only>
-          <ukg-icon slot="icon-only" name="filter"></ukg-icon>
-        </ukg-button>
+      <ukg-searchbar aria-label="searchbar" slot="right" id="player-search">
       </ukg-searchbar>
       <table>
         <thead>

@@ -19,21 +19,24 @@ const props = defineProps({
     selectedPlayers: {
         type: Array,
         required: true,
+    },
+    selectedTeamIndex: {
+        type: Number,
+        required: true,
     }
 })
 
 
-const emit = defineEmits(["playersUpdated", "teamsUpdated"]);
+const emit = defineEmits(["playersUpdated", "teamsUpdated", "findTrade"]);
 
 
-const selectedTeamIndex = ref(props.isTeamA ? 0 : 1);
 
 const addPlayer = () => {
     addEventListeners([{
         selector: `ukg-select#player-select-${props.isTeamA ? 'A' : 'B'}`,
         event: 'ukgChange',
         handler: (e) => {
-            const player = props.teams[selectedTeamIndex.value].players.find((p) => p.Name === e.detail.value);
+            const player = props.teams[props.selectedTeamIndex].players.find((p) => p.Name === e.detail.value);
             const index = props.selectedPlayers.findIndex(p => p.empty);
             if (index > -1) {
                 props.selectedPlayers[index] = player;
@@ -75,7 +78,7 @@ const removePlayer = (player) => {
 }
 
 const getPlayers = () => {
-    return props.teams[selectedTeamIndex.value].players.filter((p) => !p.empty && !props.selectedPlayers.includes(p));
+    return props.teams[props.selectedTeamIndex].players.filter((p) => !p.empty && !props.selectedPlayers.includes(p));
 }
 
 onMounted(() => {
@@ -84,7 +87,7 @@ onMounted(() => {
         event: 'ukgChange',
         handler: (e) => {
             const teamIndex = props.teams.findIndex((t) => t.name === e.detail.value);
-            selectedTeamIndex.value = teamIndex;
+            props.selectedTeamIndex = teamIndex;
             props.selectedPlayers = [];
             emit("playersUpdated", props.isTeamA, []);
             emit('teamsUpdated', props.isTeamA, teamIndex);
@@ -101,7 +104,8 @@ onMounted(() => {
             <ukg-label>Team</ukg-label>
             <ukg-select :id="`team-select-${isTeamA ? 'A' : 'B'}`">
                 <template v-for="(team, index) in props.teams" :key="team.name">
-                    <ukg-select-option :label="team.name" :value="team.name" :selected="index === selectedTeamIndex">
+                    <ukg-select-option :label="team.name" :value="team.name"
+                        :selected="index === props.selectedTeamIndex">
                     </ukg-select-option>
                 </template>
             </ukg-select>
@@ -130,17 +134,20 @@ onMounted(() => {
 
                 </template>
                 <!-- conditional to change a class , hack since i can't use :class on custom components until i get vue bindings -->
-                <ukg-list-item class="positive" v-if="getResult() > 0">
+                <ukg-list-item class="positive" v-if="props.selectedTeamIndex !== null && getResult() > 0">
                     <p class="ukg-line-primary result-line">Result: {{ getResult() }}</p>
                 </ukg-list-item>
-                <ukg-list-item class="negative" v-if="getResult() < 0">
+                <ukg-list-item class="negative" v-if="props.selectedTeamIndex !== null && getResult() < 0">
                     <p class="ukg-line-primary result-line">Result: {{ getResult() }}</p>
                 </ukg-list-item>
             </ukg-list>
             <div class="add-player-section">
-                <ukg-button emphasis="low" parent-icon="add-circle-filled" @click="addPlayer">Add player</ukg-button>
+                <ukg-button :disabled="props.selectedTeamIndex === null" emphasis="low" parent-icon="add-circle-filled"
+                    @click="addPlayer">Add player</ukg-button>
                 <ukg-divider :has-margin="false" bg="light"></ukg-divider>
-                <ukg-button parent-icon="generate" emphasis="low" @click="findATrade">Find a trade</ukg-button>
+                <ukg-button disabled parent-icon="generate" emphasis="low" @click="emit('findTrade')">Find a trade -
+                    Coming soon!
+                </ukg-button>
             </div>
         </ukg-card>
     </div>
