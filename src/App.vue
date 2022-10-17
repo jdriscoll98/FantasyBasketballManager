@@ -44,6 +44,9 @@ onMounted(() => {
 const leagues = [{
   name: "My league",
   sport: "NBA",
+  settings: {
+    teamCount: 8,
+  }
 }];
 const selectedLeague = ref(null);
 
@@ -51,7 +54,9 @@ const showLeagueForm = ref(false);
 
 const leagueName = ref("");
 const selectedSport = ref("NBA");
+const selectedTeamCount = ref('12');
 const sports = ["NBA"];
+const teamCounts = ['8', '9', '10', '11', '12', '13', '14', '15', '16'];
 const setShowLeagueForm = (val) => {
   showLeagueForm.value = val;
 }
@@ -60,6 +65,9 @@ const addLeague = () => {
   leagues.push({
     name: leagueName.value,
     sport: selectedSport.value,
+    settings: {
+      teamCount: selectedTeamCount.value,
+    }
   });
   leagueName.value = "";
   setShowLeagueForm(false);
@@ -69,14 +77,29 @@ const selectLeague = (league) => {
   selectedLeague.value = league;
 }
 
+const step = ref('start');
 
-watch(() => showLeagueForm.value,
+
+watch(() => step.value,
   () => {
-    if (showLeagueForm.value) {
+    if (step.value === 'create') {
       // Workaround to fix the icon not showing up since it thinks its on dark
-      setTimeout(() => {
-        document.querySelector("#sport-select-container ukg-icon").classList.remove("ukg-icon-on-dark")
-      }, 200)
+      const id = setInterval(() => {
+        console.log("fixing icon")
+        const element = document.querySelector("#sport-select-container ukg-icon");
+        if (element) {
+          element.classList.remove("ukg-icon-on-dark")
+          clearInterval(id);
+        }
+      }, 50);
+      const id2 = setInterval(() => {
+        console.log("fixing icon")
+        const element = document.querySelector("#team-count-select-container ukg-icon");
+        if (element) {
+          element.classList.remove("ukg-icon-on-dark")
+          clearInterval(id2);
+        }
+      }, 50);
       // End Workaround
 
       addEventListeners([
@@ -86,11 +109,19 @@ watch(() => showLeagueForm.value,
           handler: (e) => {
             leagueName.value = e.target.value;
           },
-        }
+        },
+        {
+          selector: "ukg-select#team-count-select",
+          event: "ukgChange",
+          handler: (e) => {
+            selectedTeamCount.value = e.detail.value;
+          },
+        },
       ])
     }
 
   })
+
 </script>
 
 <template>
@@ -115,23 +146,53 @@ watch(() => showLeagueForm.value,
       </div>
     </ukg-tab-bar-panel>
     <div class="league-page ukg_sys_color_brand_background" v-else>
-      <div class="league-form" v-if="showLeagueForm">
-        <h3 class="ukg_sys_text_display_sm_onDark">New league</h3>
-        <ukg-label class="ukg_sys_text_subheading_lg_onDark">Name</ukg-label>
-        <ukg-input-container>
-          <ukg-input id="league-name-input"></ukg-input>
-        </ukg-input-container>
-        <ukg-label class="ukg_sys_text_subheading_lg_onDark">Sport</ukg-label>
-        <ukg-input-container id="sport-select-container">
-          <ukg-select>
-            <template v-for="sport in sports">
-              <ukg-select-option :value="sport" :label="sport" :selected="selectedSport === sport"></ukg-select-option>
-            </template>
-          </ukg-select>
-        </ukg-input-container>
-        <ukg-button @click="addLeague">Add league</ukg-button>
-        <ukg-button @click="setShowLeagueForm(false)" emphasis="mid">Go back</ukg-button>
+      <div v-if="showLeagueForm">
+
+        <template v-if="step == 'start'">
+          <div class="start">
+            <h3 class="ukg_sys_text_display_sm_onDark">New league</h3>
+            <ukg-button-group>
+              <ukg-button parent-icon="add-circle-empty" @click="step = 'create'">Create new league</ukg-button>
+              <ukg-button parent-icon="import">Import league</ukg-button>
+            </ukg-button-group>
+          </div>
+
+        </template>
+
+        <template v-if="step === 'create'">
+          <div class="league-form">
+            <h3 class="ukg_sys_text_display_sm_onDark">New league</h3>
+            <ukg-label class="ukg_sys_text_subheading_lg_onDark">Name</ukg-label>
+            <ukg-input-container>
+              <ukg-input id="league-name-input"></ukg-input>
+            </ukg-input-container>
+            <ukg-label class="ukg_sys_text_subheading_lg_onDark">Sport</ukg-label>
+            <ukg-input-container id="sport-select-container">
+              <ukg-select id="sport-select">
+                <template v-for="sport in sports">
+                  <ukg-select-option :value="sport" :label="sport" :selected="selectedSport === sport">
+                  </ukg-select-option>
+                </template>
+              </ukg-select>
+            </ukg-input-container>
+            <ukg-label class="ukg_sys_text_subheading_lg_onDark">Number of teams</ukg-label>
+            <ukg-input-container id="team-count-select-container">
+              <ukg-select id="team-count-select">
+                <template v-for="i in teamCounts" :key="i">
+                  <ukg-select-option :value="i" :label="i" :selected="selectedTeamCount === i"
+                    :compareWith="compareFunc">
+                  </ukg-select-option>
+                </template>
+              </ukg-select>
+            </ukg-input-container>
+            <ukg-button @click=" addLeague">Add league</ukg-button>
+            <ukg-button @click="step = 'start'" emphasis="mid">Go back</ukg-button>
+          </div>
+        </template>
+
+
       </div>
+
       <div class="league-section" v-else>
         <h1 class="ukg_sys_text_display_sm_onDark">Leagues</h1>
 
@@ -140,10 +201,11 @@ watch(() => showLeagueForm.value,
           <ukg-list>
             <template v-for="league in leagues" :key="league.id">
               <ukg-list-item @click="selectLeague(league)">
-                <ukg-avatar slot="left" initials="1"></ukg-avatar>
+                <ukg-icon icon='person' has-badge :badge-value="league.settings.teamCount" slot="right"></ukg-icon>
                 <p class="ukg-line-primary">{{ league.name }}</p>
-                <p class="ukg-line-secondary">{{ league.sport }}</p>
-                <ukg-icon slot="right" name="go-forward">
+                <p class="ukg-line-secondary">{{ league.sport }}
+                </p>
+                <ukg-icon slot="left" name="go-forward">
                 </ukg-icon>
               </ukg-list-item>
             </template>
@@ -152,6 +214,7 @@ watch(() => showLeagueForm.value,
         </ukg-card>
         <ukg-button @click="setShowLeagueForm(true)">Add a league</ukg-button>
       </div>
+
     </div>
   </ukg-ignite-shell>
 </template>
@@ -185,5 +248,13 @@ watch(() => showLeagueForm.value,
   .league-form {
     align-items: center
   }
+}
+
+.start {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
 }
 </style>
