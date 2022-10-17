@@ -69,16 +69,15 @@ export const usePlayers = (teams, search) => {
 
   const getTotal = (player) => {
     const total =
-      1 * Number(player.Points) +
+      0.5 * Number(player.Points) +
       1 * Number(player.Rebounds) +
-      2 * Number(player.Assists) +
-      4 * Number(player.Steals) +
-      4 * Number(player.Blocks) -
-      2 * Number(player.TO) +
-      2 * Number(player.FGM) -
-      1 * Number(player.FGA) +
-      1 * Number(player.FTM) -
-      1 * Number(player.FTA);
+      1 * Number(player.Assists) +
+      2 * Number(player.Steals) +
+      2 * Number(player.Blocks) -
+      1 * Number(player.TO) +
+      0.5 * Number(player.TPM) +
+      1 * Number(player.DD) +
+      2 * Number(player.TD);
     return Math.round(total);
   };
 
