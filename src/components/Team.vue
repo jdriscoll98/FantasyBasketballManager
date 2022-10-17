@@ -25,6 +25,7 @@ const getTeamEv = (team) => {
 };
 
 const deleteSelectedPlayer = () => {
+    console.log(props.team)
     const index = props.team.players.findIndex((p) => p.Name === selectedPlayer.value.Name);
     if (index > -1) {
         props.team.players[index] = { empty: true, position: "BN", Name: `Player ${index + 1}` };
@@ -71,7 +72,7 @@ const getPlayers = (team) => {
 
 const presentMenu = (e, player) => {
     selectedPlayer.value = player;
-    document.querySelector("ukg-menu#player-options").present(e);
+    document.querySelector(`ukg-menu#player-options-${props.team.name.replace(' ', '')}`).present(e);
 }
 const selectedPlayer = ref(null);
 "blue" | "default" | "green" | "orange" | "pink" | "purple" | "teal" | "yellow"
@@ -93,8 +94,8 @@ const getColor = (pos) => {
 
 <template>
     <div class="team">
-        <ukg-menu id="player-options">
-            <ukg-menu-item value="1" icon="delete" @click="deleteSelectedPlayer">Delete</ukg-menu-item>
+        <ukg-menu :id="`player-options-${team.name.replace(' ', '')}`">
+            <ukg-menu-item icon="delete" @click="deleteSelectedPlayer">Delete</ukg-menu-item>
         </ukg-menu>
         <ukg-list class="ukg-surface-light team-list">
             <ukg-list-section>

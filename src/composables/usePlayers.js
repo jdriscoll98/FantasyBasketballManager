@@ -23,7 +23,7 @@ export const usePlayers = (teams, search) => {
   const availablePlayers = computed(() => {
     return allPlayers.value.filter((player) => {
       let drafted = false;
-      teams.value.forEach((team) => {
+      teams.value.teams.forEach((team) => {
         return team.players.forEach((p) => {
           if (p.Name === player.Name) {
             drafted = true;
@@ -42,27 +42,29 @@ export const usePlayers = (teams, search) => {
     });
   });
 
-  function fetchPlayerData() {
-    fetch("data.csv")
-      .then((response) => response.text())
-      .then((text) => {
-        const lines = text.split("\n");
-        const cols = lines[0].split(",");
-        const players = [];
-        for (let i = 1; i < lines.length; i++) {
-          const player = {};
-          const line = lines[i];
-          const currentline = line.split(",");
-          for (let j = 0; j < cols.length; j++) {
-            player[cols[j]] = currentline[j];
+  function fetchPlayerData(league) {
+    if (league.sport === "NBA") {
+      fetch("data.csv")
+        .then((response) => response.text())
+        .then((text) => {
+          const lines = text.split("\n");
+          const cols = lines[0].split(",");
+          const players = [];
+          for (let i = 1; i < lines.length; i++) {
+            const player = {};
+            const line = lines[i];
+            const currentline = line.split(",");
+            for (let j = 0; j < cols.length; j++) {
+              player[cols[j]] = currentline[j];
+            }
+            // calculate total
+            player.Total = getTotal(player);
+            players.push(player);
           }
-          // calculate total
-          player.Total = getTotal(player);
-          players.push(player);
-        }
-        cols.push("Total");
-        allPlayers.value = players;
-      });
+          cols.push("Total");
+          allPlayers.value = players;
+        });
+    }
   }
 
   const getTotal = (player) => {

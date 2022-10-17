@@ -9,7 +9,7 @@ export const addEventListeners = (actions) => {
         element.addEventListener(event, handler);
         clearInterval(id);
       } else {
-        console.log("Could not find element", selector);
+        console.warn("Could not find element", selector);
       }
     }, 1000);
   });

@@ -11,11 +11,11 @@ export const useDraft = (teams, setTeams, sortedPlayersByTotal) => {
     draftSettings[setting] = value;
   };
   const draftRound = computed(() => {
-    const draftedPlayers = teams.value.reduce(
+    const draftedPlayers = teams.value.teams.reduce(
       (acc, team) => acc + team.players.filter((p) => !p.empty).length,
       0
     );
-    return Math.floor((draftedPlayers - 1) / teams.value.length) + 1;
+    return Math.floor((draftedPlayers - 1) / teams.value.teams.length) + 1;
   });
   const onDrafted = (player) => {
     draftPlayer(draftSettings.draftingTeamIndex, player);
@@ -32,11 +32,11 @@ export const useDraft = (teams, setTeams, sortedPlayersByTotal) => {
         }
       } else {
         // snake draft forward
-        for (let i = draftingTeamIndex + 1; i < teams.value.length; i++) {
+        for (let i = draftingTeamIndex + 1; i < teams.value.teams.length; i++) {
           draftPlayer(i, getNextPlayer());
         }
         // snake draft backward
-        for (let i = teams.value.length - 1; i > draftingTeamIndex; i--) {
+        for (let i = teams.value.teams.length - 1; i > draftingTeamIndex; i--) {
           draftPlayer(i, getNextPlayer());
         }
       }
@@ -48,7 +48,7 @@ export const useDraft = (teams, setTeams, sortedPlayersByTotal) => {
         // snake draft backward
         draftSettings.draftingTeamIndex = draftSettings.draftingTeamIndex - 1;
       } else {
-        if (draftSettings.draftingTeamIndex === teams.value.length - 1) {
+        if (draftSettings.draftingTeamIndex === teams.value.teams.length - 1) {
           return;
         }
         // snake draft forward
@@ -58,13 +58,13 @@ export const useDraft = (teams, setTeams, sortedPlayersByTotal) => {
   };
 
   const draftPlayer = (teamIndex, player) => {
-    const team = teams.value[teamIndex];
+    const team = teams.value.teams[teamIndex];
     const emptyPlayer = team?.players.find((p) => p.empty);
     if (emptyPlayer) {
       emptyPlayer.empty = false;
       Object.assign(emptyPlayer, player);
     }
-    setTeams([...teams.value]);
+    setTeams([...teams.value.teams]);
   };
 
   const getNextPlayer = () => {

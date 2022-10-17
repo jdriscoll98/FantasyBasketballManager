@@ -21,7 +21,7 @@ const emit = defineEmits(["deletePlayer"]);
 </script>
 
 <template>
-  <TeamActions @reset="resetTeams" :teams="teams" @viewChanged="teamView = $event" :teamView="teamView" />
+  <TeamActions @reset="resetTeams" :teams="props.teams" @viewChanged="teamView = $event" :teamView="teamView" />
   <div class="team-grid">
     <template v-for="team in props.teams" :key="team.name">
       <Team :team="team" @deletePlayer="emit('deletePlayer', team, $event)" :teamView="teamView" />

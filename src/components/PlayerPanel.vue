@@ -54,11 +54,9 @@ const toolbarButtons = computed(() => {
       icon: 'person-add',
       label: "Add",
       emphasis: 'mid',
-      clickHandler: () => {
+      clickHandler: async () => {
         const dialog = document.querySelector('ukg-dialog#draft-dialog');
-        const draftingTeamName = props.teams[props.draftSettings.draftingTeamIndex].name;
-        dialog.header = `Add Player(s) to ${draftingTeamName}`;
-        dialog.present();
+        await dialog.present();
       },
     },
     {
@@ -144,7 +142,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <ukg-dialog header-divider id="draft-dialog" content-type="custom" with-button-group
+  <ukg-dialog header-divider header="Add player(s)" id="draft-dialog" content-type="custom" with-button-group
     :ready-ok="selectedPlayers.length !== 0" :buttonsHandler="draftDialogButtonsHandler">
     <div style="width: 100%">
       <div v-if="selectedPlayers.length !== 0">
@@ -212,7 +210,7 @@ onMounted(() => {
                 <ukg-button class="ukg-data-table-checkbox-button" icon-only parent-icon="person-add"
                   v-if="draftSettings.mockDraft" @click="draftPlayer(player)"></ukg-button>
                 <ukg-button class="ukg-data-table-checkbox-button" role="checkbox" icon-only v-else>
-                  <ukg-checkbox-icon :data-player="`${player.Name}`">
+                  <ukg-checkbox-icon :data-player="`${player.Name}`" :checked="selectedPlayers.includes(player)">
                   </ukg-checkbox-icon>
                 </ukg-button>
               </td>
