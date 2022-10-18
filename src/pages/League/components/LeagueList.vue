@@ -10,7 +10,7 @@ const { leagues } = storeToRefs(store)
 </script>
 
 <template>
-    <div class="league-section">
+    <div class="league-list">
         <h1 class="ukg_sys_text_display_sm_onDark">Leagues</h1>
         <h3 class="ukg_sys_text_subheading_lg_onDark" v-if="leagues.length === 0">No leagues found!</h3>
         <ukg-card>
@@ -31,3 +31,14 @@ const { leagues } = storeToRefs(store)
         <ukg-button @click="toggleLeagueForm(true)">Add a league</ukg-button>
     </div>
 </template>
+
+<style scoped>
+.league-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    gap: 1rem;
+}
+</style>

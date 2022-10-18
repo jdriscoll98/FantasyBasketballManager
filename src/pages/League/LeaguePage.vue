@@ -16,42 +16,12 @@ const { showLeagueForm } = storeToRefs(useStore());
     </div>
 </template>
 
-<style>
+<style scoped>
 .league-page {
     display: flex;
     flex-direction: column;
     align-items: center;
     height: 100vh;
     padding: 1rem;
-}
-
-.league-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 600px;
-    gap: 1rem;
-}
-
-.league-form {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-}
-
-@media screen and (min-width: 768px) {
-    .league-form {
-        align-items: center
-    }
-}
-
-.start {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    gap: 1rem;
 }
 </style>

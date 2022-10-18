@@ -16,3 +16,13 @@ const { setLeagueFormStep, toggleLeagueForm } = store;
         <ukg-button @click="toggleLeagueForm(false)">Cancel</ukg-button>
     </div>
 </template>
+
+<style scoped>
+.start {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+}
+</style>

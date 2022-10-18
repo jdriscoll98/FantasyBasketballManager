@@ -7,7 +7,7 @@ import { addEventListeners } from "../../../utils/helpers";
 import { useStore } from "../../../store";
 
 const store = useStore();
-const { importLeague, setLeagueFormStep } = store;
+const { importLeague, setLeagueFormStep, availablePlatforms } = store;
 
 const importPlatform = ref("sleeper");
 const importLeagueId = ref("882805658884804608");
@@ -36,7 +36,10 @@ onMounted(() => {
         <ukg-input-container>
             <ukg-label>Platform</ukg-label>
             <ukg-select id="league-platform-select">
-                <ukg-select-option selected value="sleeper" label="Sleeper"></ukg-select-option>
+                <template v-for="platform in availablePlatforms">
+                    <ukg-select-option :selected="platform === importPlatform" :value="platform" :label="platform">
+                    </ukg-select-option>
+                </template>
             </ukg-select>
         </ukg-input-container>
         <ukg-input-container>

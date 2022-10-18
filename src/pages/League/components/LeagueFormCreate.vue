@@ -83,3 +83,18 @@ onMounted(() => {
         <ukg-button @click="setLeagueFormStep('start')" emphasis="mid">Go back</ukg-button>
     </div>
 </template>
+
+<style scoped>
+.league-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+    .league-form {
+        align-items: center
+    }
+}
+</style>
