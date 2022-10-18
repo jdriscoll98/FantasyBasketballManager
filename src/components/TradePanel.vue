@@ -2,14 +2,6 @@
 import { ref } from "vue";
 import TradeList from "./TradeList.vue";
 
-const props = defineProps({
-    teams: {
-        type: Array,
-        required: true,
-    },
-})
-
-const emit = defineEmits(["executeTrade"]);
 
 const teamAIndex = ref(null);
 const teamBIndex = ref(null);

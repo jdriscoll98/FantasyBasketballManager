@@ -24,17 +24,17 @@ watch(() => selectedLeague.value, (league) => {
     <ukg-nav-header disable-gradient heading="Fantasy Basketball Manager" :show-menu-button="false"></ukg-nav-header>
     <ukg-tab-bar-panel v-if="selectedLeague">
       <ukg-tab-bar>
-        <ukg-tab identifier="players" label="Players" is-active></ukg-tab>
-        <!-- <ukg-tab identifier="teams" label="Teams"></ukg-tab> -->
+        <ukg-tab identifier="players" label="Players"></ukg-tab>
+        <ukg-tab identifier="teams" label="Teams" is-active></ukg-tab>
         <!-- <ukg-tab identifier="trades" label="Trade"></ukg-tab> -->
       </ukg-tab-bar>
       <div id="players">
         <PlayerPanel />
       </div>
-      <!-- <div id="teams">
+      <div id="teams">
         <TeamPanel />
       </div>
-      <div id="trades">
+      <!--   <div id="trades">
         <TradePanel />
       </div> -->
     </ukg-tab-bar-panel>

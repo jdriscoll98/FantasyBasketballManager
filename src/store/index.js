@@ -124,6 +124,7 @@ export const useStore = defineStore("store", {
     // Player actions
     async fetchPlayers(sport) {
       if (sport.toLowerCase() === "nba") {
+        // TODO: Fetch players from API
         fetch("data.csv")
           .then((response) => response.text())
           .then((text) => {
@@ -146,6 +147,7 @@ export const useStore = defineStore("store", {
       }
 
       const getTotal = (player) => {
+        // TODO: Use league scoring settings to calculate total
         const total =
           0.5 * Number(player.Points) +
           1 * Number(player.Rebounds) +

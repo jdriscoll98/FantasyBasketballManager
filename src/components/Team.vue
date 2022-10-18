@@ -1,19 +1,6 @@
 <script setup>
 import { POSITION_ORDER } from "../utils/constants";
 import { ref } from "vue";
-const props = defineProps({
-    team: {
-        type: Object,
-        required: true,
-    },
-    teamView: {
-        type: String,
-        required: true,
-    },
-});
-
-const emit = defineEmits(["deletePlayer"]);
-
 
 const getTeamEv = (team) => {
     // sum up each players total value
