@@ -1,59 +1,22 @@
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted } from "vue";
+// Pages
+import Leagues from "./pages/League/LeaguePage.vue";
+// Components
 import PlayerPanel from "./components/PlayerPanel.vue";
 import TeamPanel from "./components/TeamPanel.vue";
 import TradePanel from "./components/TradePanel.vue";
-import Leagues from "./components/Leagues.vue";
-import { useTeams } from "./composables/useTeams.js";
-import { usePlayers } from "./composables/usePlayers.js";
-import { useTeamActions } from "./composables/useTeamActions.js";
-import { useDraft } from "./composables/useDraft.js";
-import { useTrades } from "./composables/useTrades.js";
-import { useLeagues } from "./composables/useLeagues.js";
+// Stores
+import { useStore } from "./store";
+import { storeToRefs } from "pinia"
 
-const { leagues, selectedLeague, fetchLeagueData, addLeague, selectLeague } = useLeagues();
-
-const {
-  teams,
-  fetchTeamData,
-  setTeams,
-  deletePlayer,
-} = useTeams();
-
-const search = ref("");
-
-const { allPlayers, fetchPlayerData, displayPlayers, sortedPlayersByTotal, cols } =
-  usePlayers(teams, search);
-
-const { onDrafted, changeSetting, draftSettings } = useDraft(
-  teams,
-  setTeams,
-  sortedPlayersByTotal,
-);
-
-const { resetTeams, teamView } = useTeamActions(
-  teams,
-);
-
-const { executeTrade, findTrade } = useTrades(teams, setTeams);
-
-
-onMounted(() => {
-  fetchLeagueData();
-});
-
-watch(() => selectedLeague.value, () => {
-  fetchPlayerData(selectedLeague.value);
-  fetchTeamData(selectedLeague.value, allPlayers);
-});
-
-
-
+const { selectedLeague } = storeToRefs(useStore());
 
 </script>
 
 <template>
   <ukg-ignite-shell default-translation-path>
+
     <ukg-nav-header disable-gradient heading="Fantasy Basketball Manager" :show-menu-button="false"></ukg-nav-header>
     <ukg-tab-bar-panel v-if="selectedLeague">
       <ukg-tab-bar>
@@ -62,17 +25,16 @@ watch(() => selectedLeague.value, () => {
         <ukg-tab identifier="trades" label="Trade"></ukg-tab>
       </ukg-tab-bar>
       <div id="players">
-        <PlayerPanel :changeSetting="changeSetting" :players="displayPlayers" :cols="cols" @draftPlayer="onDrafted"
-          :draftSettings="draftSettings" :teams="teams.teams" @searchChanged="search = $event" />
+        <PlayerPanel />
       </div>
       <div id="teams">
-        <TeamPanel :teams="teams.teams" @deletePlayer="deletePlayer" :teamView="teamView" :resetTeams="resetTeams" />
+        <TeamPanel />
       </div>
       <div id="trades">
-        <TradePanel :teams="teams.teams" @execute-trade="executeTrade" @find-trade="findTrade" />
+        <TradePanel />
       </div>
     </ukg-tab-bar-panel>
-    <Leagues v-else :leagues="leagues" @add-league="addLeague" @select-league="selectLeague" />
+    <Leagues />
   </ukg-ignite-shell>
 </template>
 

@@ -1,21 +1,13 @@
 import { createApp } from "vue";
-import PrimeVue from "primevue/config";
+import { createPinia } from "pinia";
+
 import "./style.css";
 import App from "./App.vue";
-
-import "primevue/resources/themes/saga-blue/theme.css";
-import "primevue/resources/primevue.min.css";
-import "primeicons/primeicons.css";
-// components
-import Button from "primevue/button";
-import Dropdown from "primevue/dropdown";
-import SelectButton from "primevue/selectbutton";
-import Menu from "primevue/menu";
+import piniaPersist from "pinia-plugin-persist";
 
 const app = createApp(App);
-app.use(PrimeVue);
-app.component("Button", Button);
-app.component("Dropdown", Dropdown);
-app.component("SelectButton", SelectButton);
-app.component("Menu", Menu);
+const pinia = createPinia();
+pinia.use(piniaPersist);
+
+app.use(pinia);
 app.mount("#app");

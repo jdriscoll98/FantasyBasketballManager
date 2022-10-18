@@ -5,11 +5,8 @@ export const addEventListeners = (actions) => {
       const { selector, event, handler } = action;
       const element = document.querySelector(selector);
       if (element) {
-        console.log("adding event listener", selector, event);
         element.addEventListener(event, handler);
         clearInterval(id);
-      } else {
-        console.warn("Could not find element", selector);
       }
     }, 1000);
   });
