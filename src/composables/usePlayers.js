@@ -12,7 +12,6 @@ export const usePlayers = (teams, search) => {
         );
       })
       .sort((a, b) => {
-        // sort by 50% total and 50% adp
         const aTotal = Number(a.Total);
         const bTotal = Number(b.Total);
         return bTotal - aTotal;
@@ -43,7 +42,7 @@ export const usePlayers = (teams, search) => {
   });
 
   function fetchPlayerData(league) {
-    if (league.sport === "NBA") {
+    if (league.sport.toLowerCase() === "nba") {
       fetch("data.csv")
         .then((response) => response.text())
         .then((text) => {

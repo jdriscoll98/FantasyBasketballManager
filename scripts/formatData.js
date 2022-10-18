@@ -25,6 +25,7 @@ const csvWriter = createCsvWriter({
     { id: "Points", title: "Points" },
     { id: "DoubleDoubles", title: "DD" },
     { id: "TripleDoubles", title: "TD" },
+    { id: "SleeperId", title: "SleeperId" },
   ],
 });
 
@@ -68,6 +69,7 @@ const records = data.map((player) => {
     Points,
     DoubleDoubles,
     TripleDoubles,
+    SleeperId: matchedPlayer?.player_id,
   };
 });
 csvWriter

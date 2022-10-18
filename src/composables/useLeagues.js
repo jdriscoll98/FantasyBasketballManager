@@ -14,7 +14,7 @@ export const useLeagues = () => {
   };
 
   const addLeague = (league) => {
-    league.id = Math.floor(Math.random() * 10000) + 1;
+    league.id = league.id ?? Math.floor(Math.random() * 10000) + 1;
     setLeagues([...leagues.value, league]);
   };
 

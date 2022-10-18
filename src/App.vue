@@ -22,7 +22,7 @@ const {
 
 const search = ref("");
 
-const { fetchPlayerData, displayPlayers, sortedPlayersByTotal, cols } =
+const { allPlayers, fetchPlayerData, displayPlayers, sortedPlayersByTotal, cols } =
   usePlayers(teams, search);
 
 const { onDrafted, changeSetting, draftSettings } = useDraft(
@@ -43,8 +43,8 @@ onMounted(() => {
 });
 
 watch(() => selectedLeague.value, () => {
-  fetchTeamData(selectedLeague.value);
   fetchPlayerData(selectedLeague.value);
+  fetchTeamData(selectedLeague.value, allPlayers);
 });
 
 

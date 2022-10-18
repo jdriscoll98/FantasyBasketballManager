@@ -1,6 +1,6 @@
 
 <script setup>
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { addEventListeners } from "../utils/helpers.js";
 
 const props = defineProps({
@@ -71,6 +71,50 @@ const validateAndSubmit = () => {
     showLeagueForm.value = false;
     step.value = 'start';
 }
+
+const importPlatform = ref("sleeper");
+const importLeagueId = ref("882805658884804608");
+const importLeague = async () => {
+    if (importPlatform.value === 'sleeper') {
+        const res = await fetch(`https://api.sleeper.app/v1/league/${importLeagueId.value}`)
+        const data = await res.json();
+        const numberOfTeams = data.total_rosters;
+        const sport = data.sport;
+        const scoringSettings = data.scoring_settings;
+        const rosterPositions = data.roster_positions;
+        const name = data.name;
+        const league = {
+            name,
+            sport,
+            numberOfTeams,
+            scoringSettings,
+            rosterPositions,
+            imported: true,
+            platform: importPlatform.value,
+            id: importLeagueId.value,
+        }
+        emit("addLeague", league);
+        showLeagueForm.value = false;
+    }
+
+}
+
+onMounted(() => {
+    addEventListeners([{
+        selector: "ukg-input#league-id-input",
+        event: "ukgChange",
+        handler: (e) => {
+            importLeagueId.value = e.target.value;
+        },
+    },
+    {
+        selector: "ukg-select#import-platform-select",
+        event: "ukgChange",
+        handler: (e) => {
+            importPlatform.value = e.detail.value;
+        },
+    }])
+})
 </script>
 
 <template>
@@ -82,7 +126,7 @@ const validateAndSubmit = () => {
                     <ukg-button-group>
                         <ukg-button parent-icon="add-circle-empty" @click="step = 'create'">Create new league
                         </ukg-button>
-                        <ukg-button parent-icon="import">Import league</ukg-button>
+                        <ukg-button parent-icon="import" @click="step = 'import'">Import league</ukg-button>
                     </ukg-button-group>
                 </div>
             </template>
@@ -115,6 +159,26 @@ const validateAndSubmit = () => {
                     </ukg-input-container>
                     <ukg-button @click="validateAndSubmit">Add league</ukg-button>
                     <ukg-button @click="step = 'start'" emphasis="mid">Go back</ukg-button>
+                </div>
+            </template>
+
+            <template v-if="step === 'import'">
+                <div class="import">
+                    <h3 class="ukg_sys_text_display_sm_onDark">Import league</h3>
+                    <ukg-input-container>
+                        <ukg-label>Platform</ukg-label>
+                        <ukg-select id="league-platform-select">
+                            <ukg-select-option selected value="sleeper" label="Sleeper"></ukg-select-option>
+                        </ukg-select>
+                    </ukg-input-container>
+                    <ukg-input-container>
+                        <ukg-label>League ID</ukg-label>
+                        <ukg-input :value="importLeagueId" id="league-id-input"></ukg-input>
+                    </ukg-input-container>
+                    <ukg-button-group>
+                        <ukg-button @click="importLeague">Import</ukg-button>
+                        <ukg-button @click="step = 'start'" emphasis="mid">Go back</ukg-button>
+                    </ukg-button-group>
                 </div>
             </template>
         </div>
