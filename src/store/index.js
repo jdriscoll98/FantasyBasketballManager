@@ -88,7 +88,7 @@ export const useStore = defineStore("store", {
           },
           0
         );
-        return isTeamA ? teamAValue - teamAValue : teamBValue - teamAValue;
+        return isTeamA ? teamBValue - teamAValue : teamAValue - teamBValue;
       };
     },
   },

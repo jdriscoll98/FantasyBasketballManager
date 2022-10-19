@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 // Pages
 import Leagues from "./pages/League/LeaguePage.vue";
 // Components
@@ -39,6 +39,15 @@ onMounted(async () => {
       },
     }
   ])
+})
+
+watch(() => selectedLeague.value, async () => {
+  if (selectedLeague.value) {
+    loading.value = true;
+    await fetchPlayers();
+    await fetchTeams();
+    loading.value = false;
+  }
 })
 
 
