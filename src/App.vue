@@ -2,10 +2,9 @@
 import { onMounted, ref, watch } from "vue";
 // Pages
 import Leagues from "./pages/League/LeaguePage.vue";
-// Components
 import PlayerPanel from "./pages/Players/PlayerPanel.vue";
 import TeamPanel from "./pages/Teams/TeamPanel.vue";
-import TradePanel from "./components/TradePanel.vue";
+import TradePanel from "./pages/Trades/TradePanel.vue";
 // Stores
 import { useStore } from "./store";
 import { storeToRefs } from "pinia"

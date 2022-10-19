@@ -1,9 +1,9 @@
 
 <script setup>
 import { onMounted } from "vue";
-import { addEventListeners } from "../utils/helpers";
+import { addEventListeners } from "../../utils/helpers";
 
-import { useStore } from "../store";
+import { useStore } from "../../store";
 import { storeToRefs } from "pinia";
 
 const store = useStore();
