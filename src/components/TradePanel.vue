@@ -1,80 +1,12 @@
 <script setup>
-import { ref } from "vue";
 import TradeList from "./TradeList.vue";
-
-
-const teamAIndex = ref(null);
-const teamBIndex = ref(null);
-
-const teamASelectedPlayers = ref([]);
-const teamBSelectedPlayers = ref([]);
-
-const updatePlayers = (isTeamA, players) => {
-    if (isTeamA) {
-        teamASelectedPlayers.value = players;
-    }
-    else {
-        teamBSelectedPlayers.value = players;
-    }
-}
-
-const updateTeams = (isTeamA, teamIndex) => {
-    if (isTeamA) {
-        teamAIndex.value = teamIndex;
-    }
-    else {
-        teamBIndex.value = teamIndex;
-    }
-}
-
-const executeTrade = () => {
-    if (teamASelectedPlayers.value.length !== teamBSelectedPlayers.value.length) {
-        return;
-    }
-    const tradePayload = {
-        teamAData: {
-            index: teamAIndex.value,
-            players: teamASelectedPlayers.value,
-        },
-        teamBData: {
-            index: teamBIndex.value,
-            players: teamBSelectedPlayers.value,
-        }
-    }
-    emit("executeTrade", tradePayload);
-    teamASelectedPlayers.value = [];
-    teamBSelectedPlayers.value = [];
-
-}
-
-const onFindTrade = () => {
-    const tradePayload = {
-        teamAData: {
-            index: teamAIndex.value,
-            players: teamASelectedPlayers.value,
-        },
-        teamBData: {
-            index: teamBIndex.value,
-            players: teamBSelectedPlayers.value,
-        }
-    }
-    emit("findTrade", tradePayload);
-}
-
-
 
 </script>
 
 <template>
-    <ukg-toolbar></ukg-toolbar>
     <div class="trade-panel">
-        <TradeList @find-trade="onFindTrade" @players-updated="updatePlayers" @teams-updated="updateTeams"
-            :selectedTeamIndex="teamAIndex" :selectedPlayers="teamASelectedPlayers"
-            :receivingPlayers="teamBSelectedPlayers" :teams="teams" is-team-a />
-        <ukg-button @click="executeTrade">Execute trade</ukg-button>
-        <TradeList @find-trade="onFindTrade" @players-updated="updatePlayers" @teams-updated="updateTeams"
-            :selectedTeamIndex="teamBIndex" :receivingPlayers="teamASelectedPlayers"
-            :selectedPlayers="teamBSelectedPlayers" :teams="teams" />
+        <TradeList is-team-a />
+        <TradeList />
     </div>
 </template>
 
@@ -94,19 +26,5 @@ const onFindTrade = () => {
         align-items: center;
         gap: 1rem;
     }
-
-    ukg-button {
-        order: 3;
-    }
-}
-
-.payoff-table {
-    max-width: fit-content;
-    margin: 0 auto;
-}
-
-
-.execute-trade-btn {
-    margin: 1rem auto;
 }
 </style>

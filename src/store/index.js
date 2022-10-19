@@ -5,6 +5,8 @@ import { fetchTeamsFromSleeper } from "../utils/integrations";
 // One big store for now, but we can split it up later
 export const useStore = defineStore("store", {
   state: () => ({
+    // App state
+    activeTab: "players",
     // League state
     leagues: [],
     selectedLeague: null,
@@ -16,6 +18,13 @@ export const useStore = defineStore("store", {
     // Team state
     allTeams: [],
     currentTeams: [],
+    // Trade state
+    currentTrade: {
+      teamA: null,
+      teamB: null,
+      teamAPlayers: [],
+      teamBPlayers: [],
+    },
   }),
   getters: {
     // League getters
@@ -64,6 +73,24 @@ export const useStore = defineStore("store", {
         : [];
     },
     // Team getters
+    // Trade getters
+    getTradeValue() {
+      return (isTeamA) => {
+        const teamAValue = this.currentTrade.teamAPlayers.reduce(
+          (acc, player) => {
+            return acc + Number(player.Total);
+          },
+          0
+        );
+        const teamBValue = this.currentTrade.teamBPlayers.reduce(
+          (acc, player) => {
+            return acc + Number(player.Total);
+          },
+          0
+        );
+        return isTeamA ? teamAValue - teamAValue : teamBValue - teamAValue;
+      };
+    },
   },
   actions: {
     // League actions
@@ -203,6 +230,21 @@ export const useStore = defineStore("store", {
     },
     async setPlayerSearch(search) {
       this.playerSearch = search;
+    },
+    // Trade actions
+    async setTradeTeams(team, isTeamA) {
+      if (isTeamA) {
+        this.tradeTeamA = team;
+      } else {
+        this.tradeTeamB = team;
+      }
+    },
+    async addPlayersToTrade(players, isTeamA) {
+      if (isTeamA) {
+        this.playersA = players;
+      } else {
+        this.playersB = players;
+      }
     },
   },
   persist: {

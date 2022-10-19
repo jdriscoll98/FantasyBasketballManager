@@ -45,7 +45,6 @@ const isColumnSticky = (col) => {
             <table>
                 <thead>
                     <tr>
-                        <ukg-th type="empty" sticky="left"></ukg-th>
                         <template v-for="col in playerTableColumns">
                             <ukg-th :sticky="isColumnSticky(col)">{{ col }}</ukg-th>
                         </template>
@@ -54,10 +53,6 @@ const isColumnSticky = (col) => {
                 <tbody>
                     <template v-for="player in filteredPlayers" :key="player.Name">
                         <tr>
-                            <td class="ukg-table-column-checkbox">
-                                <ukg-button class="ukg-data-table-checkbox-button" icon-only parent-icon="person-add"
-                                    @click="draftPlayer(player)"></ukg-button>
-                            </td>
                             <template v-for="col in playerTableColumns" :key="player[col]">
                                 <td>{{ player[col] }}</td>
                             </template>

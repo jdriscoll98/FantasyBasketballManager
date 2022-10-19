@@ -1,6 +1,6 @@
 <script setup>
 import Team from "./Team.vue";
-import { useStore } from "../store/";
+import { useStore } from "../../store";
 import { storeToRefs } from "pinia";
 
 const store = useStore();

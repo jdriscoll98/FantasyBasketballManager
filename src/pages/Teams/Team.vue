@@ -1,6 +1,5 @@
 <script setup>
-import { ref } from "vue";
-import { useStore } from "../store/";
+import { useStore } from "../../store";
 import { storeToRefs } from "pinia";
 
 const store = useStore();
