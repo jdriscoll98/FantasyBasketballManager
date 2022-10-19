@@ -55,40 +55,6 @@ export const useTeams = () => {
     }
   }
 
-  async function fetchTeamsFromSleeper(league, allPlayers) {
-    const res = await fetch(
-      `https://api.sleeper.app/v1/league/${league.id}/rosters`
-    );
-    const data = await res.json();
-    const teams = [];
-    for (const team of data) {
-      const players = [];
-      for (const playerId of team.players) {
-        const p = allPlayers.value.find((p) => p.SleeperId === playerId);
-        if (p) {
-          players.push(p);
-        } else {
-          players.push({
-            Name: playerId,
-            Position: "BN",
-            empty: true,
-          });
-        }
-      }
-      const res2 = await fetch(
-        `https://api.sleeper.app/v1/user/${team.owner_id}`
-      );
-      const data2 = await res2.json();
-      const teamName = data2.display_name;
-      teams.push({
-        id: team.roster_id,
-        name: teamName,
-        players,
-      });
-    }
-    return teams;
-  }
-
   function setTeams(newTeams) {
     teams.value.teams = newTeams;
     const allTeams = localStorage.getItem("allTeams")

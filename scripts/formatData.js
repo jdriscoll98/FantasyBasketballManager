@@ -49,7 +49,13 @@ const records = data.map((player) => {
     TripleDoubles,
   } = player;
   // find fantasy positions from players.json
-  const matchedPlayer = playerData.find((p) => Name.includes(p.full_name));
+  let matchedPlayer = playerData.find((p) =>
+    Name.toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .includes(p.full_name?.toLowerCase())
+  );
+
   const fantasy_positions = matchedPlayer?.fantasy_positions || [];
   return {
     Name,

@@ -11,8 +11,8 @@ const { leagues } = storeToRefs(store)
 
 <template>
     <div class="league-list">
-        <h1 class="ukg_sys_text_display_sm_onDark">Leagues</h1>
-        <h3 class="ukg_sys_text_subheading_lg_onDark" v-if="leagues.length === 0">No leagues found!</h3>
+        <h1>Leagues</h1>
+        <h3 v-if="leagues.length === 0">No leagues found!</h3>
         <ukg-card>
             <ukg-list>
                 <template v-for="league in leagues" :key="league.id">

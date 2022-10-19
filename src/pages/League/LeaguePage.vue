@@ -10,7 +10,7 @@ const { showLeagueForm } = storeToRefs(useStore());
 </script>
 
 <template>
-    <div class="league-page ukg_sys_color_brand_background">
+    <div class="league-page ">
         <LeagueForm v-if="showLeagueForm" />
         <LeagueList v-else />
     </div>
@@ -21,7 +21,6 @@ const { showLeagueForm } = storeToRefs(useStore());
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100vh;
     padding: 1rem;
 }
 </style>

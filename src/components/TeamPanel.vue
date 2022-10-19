@@ -1,30 +1,17 @@
 <script setup>
 import Team from "./Team.vue";
-import TeamActions from "./TeamActions.vue"
-const props = defineProps({
-  teams: {
-    type: Array,
-    required: true,
-  },
-  teamView: {
-    type: String,
-    required: true,
-  },
-  resetTeams: {
-    type: Function,
-    required: true,
-  },
-});
+import { useStore } from "../store/";
+import { storeToRefs } from "pinia";
 
-const emit = defineEmits(["deletePlayer"]);
+const store = useStore();
+const { currentTeams } = storeToRefs(store);
 
 </script>
 
 <template>
-  <TeamActions @reset="resetTeams" :teams="props.teams" @viewChanged="teamView = $event" :teamView="teamView" />
   <div class="team-grid">
-    <template v-for="team in props.teams" :key="team.name">
-      <Team :team="team" @deletePlayer="emit('deletePlayer', team, $event)" :teamView="teamView" />
+    <template v-for="team in currentTeams" :key="team.name">
+      <Team :team="team" />
     </template>
   </div>
 </template>

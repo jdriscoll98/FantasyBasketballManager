@@ -1,6 +1,17 @@
 <script setup>
-import { POSITION_ORDER } from "../utils/constants";
 import { ref } from "vue";
+import { useStore } from "../store/";
+import { storeToRefs } from "pinia";
+
+const store = useStore();
+const { selectedLeague } = storeToRefs(store);
+
+const props = defineProps({
+    team: {
+        type: Object,
+        required: true,
+    },
+});
 
 const getTeamEv = (team) => {
     // sum up each players total value
@@ -11,58 +22,6 @@ const getTeamEv = (team) => {
     );
 };
 
-const deleteSelectedPlayer = () => {
-    console.log(props.team)
-    const index = props.team.players.findIndex((p) => p.Name === selectedPlayer.value.Name);
-    if (index > -1) {
-        props.team.players[index] = { empty: true, position: "BN", Name: `Player ${index + 1}` };
-        emit("deletePlayer", props.team, selectedPlayer);
-    }
-}
-
-const getPosition = (position, index) => {
-    if (props.teamView === 'draft' || index > 9) {
-        return position ? position.replaceAll('"', '').split(" ")[0] : "BN";
-    }
-    else {
-        return POSITION_ORDER[index]
-    }
-}
-
-
-const getPlayers = (team) => {
-    if (props.teamView === 'draft') {
-        return team.players;
-    }
-    else {
-        const players = Array(13).fill(0).map((_, i) => {
-            return { empty: true, Position: POSITION_ORDER[i], Name: `Player ${i + 1}` };
-        });
-        const remainingPlayers = [...team.players.filter((p) => !p.empty)];
-        POSITION_ORDER.forEach((pos, index) => {
-            const player = remainingPlayers.find((player) => {
-                return player.Position?.includes(pos)
-            });
-            if (player) {
-                players[index] = player;
-                remainingPlayers.splice(remainingPlayers.indexOf(player), 1);
-            }
-        })
-        remainingPlayers.forEach((player) => {
-            const emptyIndex = players.findIndex((p) => p.empty && p.Position === "BN");
-            players[emptyIndex] = player;
-        })
-        return players;
-    }
-}
-
-
-const presentMenu = (e, player) => {
-    selectedPlayer.value = player;
-    document.querySelector(`ukg-menu#player-options-${props.team.name.replace(' ', '')}`).present(e);
-}
-const selectedPlayer = ref(null);
-"blue" | "default" | "green" | "orange" | "pink" | "purple" | "teal" | "yellow"
 const getColor = (pos) => {
     const posToColor = {
         "PG": 'blue',
@@ -77,26 +36,32 @@ const getColor = (pos) => {
     return posToColor[pos];
 }
 
+const sortedByRosterOrder = (players) => {
+    return players.sort((a, b) => {
+        const rosterOrder = selectedLeague.value.rosterPositions;
+        const aIndex = rosterOrder.indexOf(a.RosterSlot);
+        const bIndex = rosterOrder.indexOf(b.RosterSlot);
+        return aIndex - bIndex;
+    })
+}
+
 </script>
 
 <template>
     <div class="team">
-        <ukg-menu :id="`player-options-${team.name.replace(' ', '')}`">
+        <ukg-menu :id="`player-options-${props.team.name.replace(' ', '')}`">
             <ukg-menu-item icon="delete" @click="deleteSelectedPlayer">Delete</ukg-menu-item>
         </ukg-menu>
-        <ukg-list class="ukg-surface-light team-list">
+        <ukg-list class="team-list">
             <ukg-list-section>
                 {{ props.team.name }}
             </ukg-list-section>
-            <template v-for="(player, index) of getPlayers(props.team)">
+            <template v-for="player of sortedByRosterOrder(props.team.players)">
                 <ukg-list-item has-divider>
-                    <ukg-avatar slot="left" :initials="getPosition(player.Position, index)"
-                        :color="getColor(getPosition(player.Position, index))">
+                    <ukg-avatar slot="left" :initials="player.RosterSlot" :color="getColor(player.RosterSlot)">
                     </ukg-avatar>
                     <p class="ukg-line-primary" :style="{'white-space': 'nowrap'}">{{ player.Name }}</p>
                     <p class="ukg-line-secondary">EV: {{ player.Total }}</p>
-                    <ukg-button slot="right" icon-only parent-icon="menu-overflow" @click="presentMenu($event, player)">
-                    </ukg-button>
                 </ukg-list-item>
             </template>
         </ukg-list>

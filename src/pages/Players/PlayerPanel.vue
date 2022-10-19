@@ -18,9 +18,6 @@ onMounted(() => {
             },
         },
     ]);
-    if (players.value.length === 0) {
-        fetchPlayers(selectedLeague.sport);
-    }
     setPlayerSearch("");
 })
 

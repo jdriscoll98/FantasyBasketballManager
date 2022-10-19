@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 
+import { fetchTeamsFromSleeper } from "../utils/integrations";
+
 // One big store for now, but we can split it up later
 export const useStore = defineStore("store", {
   state: () => ({
@@ -8,12 +10,12 @@ export const useStore = defineStore("store", {
     selectedLeague: null,
     // League form state
     showLeagueForm: false,
-    leagueFormStep: "start",
     // Player state
     players: [],
     playerSearch: "",
     // Team state
-    teams: [],
+    allTeams: [],
+    currentTeams: [],
   }),
   getters: {
     // League getters
@@ -32,7 +34,7 @@ export const useStore = defineStore("store", {
     availablePlayers() {
       // return players that aren't on any team
       return this.players.filter((player) => {
-        return !this.teams.some((team) => {
+        return !this.currentTeams.some((team) => {
           return team.players.some((p) => {
             return p.Name === player.Name;
           });
@@ -55,7 +57,7 @@ export const useStore = defineStore("store", {
     },
     sortedPlayers(sortKey = "Total") {},
     playerTableColumns() {
-      return this.players
+      return this.players[0]
         ? Object.keys(this.players[0]).filter((col) => {
             return col !== "SleeperId";
           })
@@ -74,8 +76,48 @@ export const useStore = defineStore("store", {
       if (!newLeague.id) {
         newLeague.id = Math.floor(Math.random() * 1000000);
       }
+      if (!newLeague.scoringSettings) {
+        this.addDefaultScoringSettings(newLeague);
+      }
+      if (!newLeague.rosterPositions) {
+        this.addDefaultRosterPositions(newLeague);
+      }
       this.leagues.push(newLeague);
       return true;
+    },
+    addDefaultRosterPositions(league) {
+      league.rosterPositions = [
+        "PG",
+        "SG",
+        "G",
+        "SF",
+        "PF",
+        "F",
+        "C",
+        "UTIL",
+        "UTIL",
+        "UTIL",
+        "BE",
+        "BE",
+        "BE",
+      ];
+    },
+    addDefaultScoringSettings(league) {
+      league.scoringSettings = {
+        PTS: 0.5,
+        REB: 1,
+        AST: 1,
+        STL: 2,
+        BLK: 2,
+        TO: -1,
+        DD: 1,
+        TD: 2,
+        TF: -1,
+        FF: -2,
+        FG3M: 0.5,
+        Bonus40: 2,
+        Bonus50: 2,
+      };
     },
     async importLeague(importPayload) {
       const { platform } = importPayload;
@@ -108,24 +150,27 @@ export const useStore = defineStore("store", {
     // League form actions
     async toggleLeagueForm(show) {
       this.showLeagueForm = show;
-      if (!show) {
-        this.leagueFormStep = "start";
-      }
-    },
-    async setLeagueFormStep(step) {
-      this.leagueFormStep = step;
     },
     // Team actions
-    async fetchTeams() {},
+    async fetchTeams() {
+      if (this.selectedLeague?.platform === "sleeper") {
+        this.currentTeams = await fetchTeamsFromSleeper(
+          this.selectedLeague,
+          this.players
+        );
+      }
+    },
+
     async updateTeams(newTeams) {},
     async removePlayerFromTeam(team, player) {},
     async resetTeams() {},
     async tradePlayers(teamA, teamB, playersA, playersB) {},
+
     // Player actions
-    async fetchPlayers(sport) {
-      if (sport.toLowerCase() === "nba") {
+    async fetchPlayers() {
+      if (this.selectedLeague?.sport.toLowerCase() === "nba") {
         // TODO: Fetch players from API
-        fetch("data.csv")
+        await fetch("data.csv")
           .then((response) => response.text())
           .then((text) => {
             const lines = text.split("\n");
@@ -138,28 +183,23 @@ export const useStore = defineStore("store", {
               for (let j = 0; j < cols.length; j++) {
                 player[cols[j]] = currentline[j];
               }
-              player.Total = getTotal(player);
+              player.Total = Math.round(
+                0.5 * Number(player.Points) +
+                  1 * Number(player.Rebounds) +
+                  1 * Number(player.Assists) +
+                  2 * Number(player.Steals) +
+                  2 * Number(player.Blocks) -
+                  1 * Number(player.TO) +
+                  0.5 * Number(player.TPM) +
+                  1 * Number(player.DD) +
+                  2 * Number(player.TD)
+              );
               players.push(player);
             }
             cols.push("Total");
             this.players = players;
           });
       }
-
-      const getTotal = (player) => {
-        // TODO: Use league scoring settings to calculate total
-        const total =
-          0.5 * Number(player.Points) +
-          1 * Number(player.Rebounds) +
-          1 * Number(player.Assists) +
-          2 * Number(player.Steals) +
-          2 * Number(player.Blocks) -
-          1 * Number(player.TO) +
-          0.5 * Number(player.TPM) +
-          1 * Number(player.DD) +
-          2 * Number(player.TD);
-        return Math.round(total);
-      };
     },
     async setPlayerSearch(search) {
       this.playerSearch = search;

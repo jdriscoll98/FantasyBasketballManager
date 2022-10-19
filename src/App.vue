@@ -10,17 +10,19 @@ import TradePanel from "./components/TradePanel.vue";
 import { useStore } from "./store";
 import { storeToRefs } from "pinia"
 
-const { selectedLeague, fetchPlayers } = storeToRefs(useStore());
+const store = useStore();
+const { fetchPlayers, fetchTeams } = store;
+const { selectedLeague } = storeToRefs(store);
 
-watch(() => selectedLeague.value, (league) => {
-  fetchPlayers(league.sport)
-});
+onMounted(async () => {
+  await fetchPlayers();
+  await fetchTeams();
+})
 
 </script>
 
 <template>
   <ukg-ignite-shell default-translation-path>
-
     <ukg-nav-header disable-gradient heading="Fantasy Basketball Manager" :show-menu-button="false"></ukg-nav-header>
     <ukg-tab-bar-panel v-if="selectedLeague">
       <ukg-tab-bar>
