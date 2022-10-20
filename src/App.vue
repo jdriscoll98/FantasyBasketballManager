@@ -54,7 +54,9 @@ watch(() => selectedLeague.value, async () => {
 
 <template>
   <ukg-ignite-shell default-translation-path>
-    <ukg-nav-header show-back-button heading="Fantasy Basketball Manager" :show-menu-button="false"></ukg-nav-header>
+    <ukg-nav-header disable-gradient show-back-button heading="Fantasy Basketball Manager" :show-menu-button="false">
+    </ukg-nav-header>
+
     <ukg-tab-bar-panel v-if="selectedLeague && !loading">
       <ukg-tab-bar>
         <ukg-tab identifier="players" label="Players" :is-active="activeTab === 'players'"></ukg-tab>

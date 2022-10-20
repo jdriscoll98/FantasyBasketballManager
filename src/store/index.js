@@ -1,6 +1,9 @@
 import { defineStore } from "pinia";
 
-import { fetchTeamsFromSleeper } from "../utils/integrations";
+import {
+  fetchTeamsFromSleeper,
+  importLeagueFromSleeper,
+} from "../utils/integrations";
 
 // One big store for now, but we can split it up later
 export const useStore = defineStore("store", {
@@ -149,24 +152,7 @@ export const useStore = defineStore("store", {
     async importLeague(importPayload) {
       const { platform } = importPayload;
       if (platform === "sleeper") {
-        const { id } = importPayload;
-        const res = await fetch(`https://api.sleeper.app/v1/league/${id}`);
-        const data = await res.json();
-        const numberOfTeams = data.total_rosters;
-        const sport = data.sport;
-        const scoringSettings = data.scoring_settings;
-        const rosterPositions = data.roster_positions;
-        const name = data.name;
-        const league = {
-          name,
-          sport,
-          numberOfTeams,
-          scoringSettings,
-          rosterPositions,
-          platform,
-          id,
-          imported: true,
-        };
+        const league = await importLeagueFromSleeper(importPayload);
         await this.addLeague(league);
         this.toggleLeagueForm(false);
       }

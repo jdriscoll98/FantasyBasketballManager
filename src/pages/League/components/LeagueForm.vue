@@ -31,7 +31,7 @@ onMounted(() => {
 
 <template>
     <div class="import">
-        <h3>Add league</h3>
+        <h3 class="ukg_sys_text_subheading_lg_onDark">Add league</h3>
         <ukg-input-container>
             <ukg-label>Platform</ukg-label>
             <ukg-select id="league-platform-select">

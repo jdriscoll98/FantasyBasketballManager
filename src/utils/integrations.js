@@ -28,6 +28,16 @@ export async function fetchTeamsFromSleeper(league, allPlayers) {
         });
       }
     }
+    if (players.length < league.rosterPositions.length) {
+      for (let i = players.length; i < league.rosterPositions.length; i++) {
+        players.push({
+          Name: "Empty",
+          Position: "BN",
+          RosterSlot: league.rosterPositions[i],
+          Total: 0,
+        });
+      }
+    }
     const res2 = await fetch(
       `https://api.sleeper.app/v1/user/${team.owner_id}`
     );
@@ -40,4 +50,25 @@ export async function fetchTeamsFromSleeper(league, allPlayers) {
     });
   }
   return teams;
+}
+
+export async function importLeagueFromSleeper(importPayload) {
+  const { platform, id } = importPayload;
+  const res = await fetch(`https://api.sleeper.app/v1/league/${id}`);
+  const data = await res.json();
+  const numberOfTeams = data.total_rosters;
+  const sport = data.sport;
+  const scoringSettings = data.scoring_settings;
+  const rosterPositions = data.roster_positions.concat(["IR"]);
+  const name = data.name;
+  const league = {
+    name,
+    sport,
+    numberOfTeams,
+    scoringSettings,
+    rosterPositions,
+    platform,
+    id,
+  };
+  return league;
 }
