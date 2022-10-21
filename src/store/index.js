@@ -28,6 +28,10 @@ export const useStore = defineStore("store", {
       teamAPlayers: [],
       teamBPlayers: [],
     },
+    // Matchup state
+    matchups: [],
+    selectedWeek: 1,
+    matchupTeamId: null,
   }),
   getters: {
     // League getters
@@ -94,6 +98,26 @@ export const useStore = defineStore("store", {
         return isTeamA ? teamBValue - teamAValue : teamAValue - teamBValue;
       };
     },
+    // Matchup getters
+    matchupTeam() {
+      const matchup = this.matchups.find((matchup) => {
+        return matchup.roster_id === this.matchupTeamId;
+      });
+      const players = matchup.starters.map((matchupPlayerId) => {
+        console.log(matchupPlayerId);
+        const player = this.players.find((player) => {
+          return player.SleeperId === matchupPlayerId;
+        });
+        return {
+          ...player,
+          playerPoints: matchup.players_points[matchupPlayerId],
+        };
+      });
+      return {
+        ...matchup,
+        players,
+      };
+    },
   },
   actions: {
     // League actions
@@ -114,40 +138,6 @@ export const useStore = defineStore("store", {
       }
       this.leagues.push(newLeague);
       return true;
-    },
-    addDefaultRosterPositions(league) {
-      league.rosterPositions = [
-        "PG",
-        "SG",
-        "G",
-        "SF",
-        "PF",
-        "F",
-        "C",
-        "UTIL",
-        "UTIL",
-        "UTIL",
-        "BE",
-        "BE",
-        "BE",
-      ];
-    },
-    addDefaultScoringSettings(league) {
-      league.scoringSettings = {
-        PTS: 0.5,
-        REB: 1,
-        AST: 1,
-        STL: 2,
-        BLK: 2,
-        TO: -1,
-        DD: 1,
-        TD: 2,
-        TF: -1,
-        FF: -2,
-        FG3M: 0.5,
-        Bonus40: 2,
-        Bonus50: 2,
-      };
     },
     async importLeague(importPayload) {
       const { platform } = importPayload;
@@ -230,6 +220,18 @@ export const useStore = defineStore("store", {
         this.playersA = players;
       } else {
         this.playersB = players;
+      }
+    },
+    // Matchup actions
+    async fetchMatchups() {
+      if (this.selectedLeague.platform === "sleeper") {
+        fetch(
+          `https://api.sleeper.app/v1/league/${this.selectedLeague.id}/matchups/${this.selectedWeek}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            this.matchups = data;
+          });
       }
     },
   },

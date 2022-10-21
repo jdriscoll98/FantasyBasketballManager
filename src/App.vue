@@ -5,6 +5,7 @@ import Leagues from "./pages/League/LeaguePage.vue";
 import PlayerPanel from "./pages/Players/PlayerPanel.vue";
 import TeamPanel from "./pages/Teams/TeamPanel.vue";
 import TradePanel from "./pages/Trades/TradePanel.vue";
+import MatchupPanel from "./pages/Matchups/MatchupPanel.vue";
 // Stores
 import { useStore } from "./store";
 import { storeToRefs } from "pinia"
@@ -18,8 +19,8 @@ const { selectedLeague, activeTab } = storeToRefs(store);
 const loading = ref(false);
 onMounted(async () => {
   loading.value = true;
-  await fetchPlayers();
-  await fetchTeams();
+  // await fetchPlayers();
+  // await fetchTeams();
   loading.value = false;
 
   addEventListeners([
@@ -43,8 +44,8 @@ onMounted(async () => {
 watch(() => selectedLeague.value, async () => {
   if (selectedLeague.value) {
     loading.value = true;
-    await fetchPlayers();
-    await fetchTeams();
+    // await fetchPlayers();
+    // await fetchTeams();
     loading.value = false;
   }
 })
@@ -62,6 +63,7 @@ watch(() => selectedLeague.value, async () => {
         <ukg-tab identifier="players" label="Players" :is-active="activeTab === 'players'"></ukg-tab>
         <ukg-tab identifier="teams" label="Teams" :is-active="activeTab === 'teams'"></ukg-tab>
         <ukg-tab identifier="trades" label="Trade" :is-active="activeTab === 'trades'"></ukg-tab>
+        <ukg-tab identifier="matchups" label="Matchup" :is-active="activeTab === 'matchups'"></ukg-tab>
       </ukg-tab-bar>
       <div id="players">
         <PlayerPanel />
@@ -71,6 +73,9 @@ watch(() => selectedLeague.value, async () => {
       </div>
       <div id="trades">
         <TradePanel />
+      </div>
+      <div id="matchups">
+        <MatchupPanel />
       </div>
     </ukg-tab-bar-panel>
     <Leagues v-else-if="!loading" />
