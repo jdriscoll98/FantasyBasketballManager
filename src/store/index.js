@@ -104,7 +104,6 @@ export const useStore = defineStore("store", {
         return matchup.roster_id === this.matchupTeamId;
       });
       const players = matchup.starters.map((matchupPlayerId) => {
-        console.log(matchupPlayerId);
         const player = this.players.find((player) => {
           return player.SleeperId === matchupPlayerId;
         });

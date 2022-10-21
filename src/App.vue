@@ -19,8 +19,8 @@ const { selectedLeague, activeTab } = storeToRefs(store);
 const loading = ref(false);
 onMounted(async () => {
   loading.value = true;
-  // await fetchPlayers();
-  // await fetchTeams();
+  await fetchPlayers();
+  await fetchTeams();
   loading.value = false;
 
   addEventListeners([
@@ -44,8 +44,8 @@ onMounted(async () => {
 watch(() => selectedLeague.value, async () => {
   if (selectedLeague.value) {
     loading.value = true;
-    // await fetchPlayers();
-    // await fetchTeams();
+    await fetchPlayers();
+    await fetchTeams();
     loading.value = false;
   }
 })
